@@ -11,7 +11,7 @@ public class Canvas extends JPanel {
 	private ScreenComponent components[];
 	private int numberOfComponents;
 	
-	private static int maxNumberOfComponents = 10;
+	private static int maxNumberOfComponents = 33;
 	
 	public Canvas() {
 		components = new ScreenComponent[maxNumberOfComponents];
