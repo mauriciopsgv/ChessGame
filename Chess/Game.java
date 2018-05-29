@@ -3,7 +3,7 @@ package Chess;
 import Graphics.MainWindow;
 
 public class Game {
-	public void initializeGame(MainWindow window) {
+	public void newGame(MainWindow window) {
 		// White side
 		
 		// Pawn Row

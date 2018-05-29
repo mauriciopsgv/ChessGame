@@ -31,6 +31,6 @@ public class MainWindow extends JFrame {
 		Board chessBoard = new Board();
 		window.addComponentToCanvas(chessBoard);
 		Game chessGame = new Game();
-		chessGame.initializeGame(window);
+		chessGame.newGame(window);
 	}
 }
