@@ -11,6 +11,9 @@ public class Canvas extends JPanel {
 	private ScreenComponent components[];
 	private int numberOfComponents;
 	
+	int cellHeight = 100; 
+	int cellWidth = 100;
+	
 	private static int maxNumberOfComponents = 33;
 	
 	public Canvas() {
@@ -32,7 +35,7 @@ public class Canvas extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for (int componentIndex = 0; componentIndex < numberOfComponents; componentIndex++) {
-			components[componentIndex].draw(g);
+			components[componentIndex].draw(g, cellHeight, cellWidth);
 		}
 	}
 

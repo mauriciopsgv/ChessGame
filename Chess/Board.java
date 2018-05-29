@@ -15,7 +15,7 @@ public class Board implements ScreenComponent {
 		return !bool;
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(Graphics g, int cellHeight, int cellWidth) {
 		boolean isBlackSquare = true;
 		for (int row = 0; row < 8; row++) {
 			for (int col = 0; col < 8; col++) {
@@ -24,7 +24,7 @@ public class Board implements ScreenComponent {
 				} else {
 					g.setColor(new Color(255,255,255));
 				}
-				g.fillRect(100*col, 100*row, 100, 100);
+				g.fillRect(cellHeight*col, cellWidth*row, cellHeight, cellWidth);
 				isBlackSquare = toggleBool(isBlackSquare);
 			}
 			isBlackSquare = toggleBool(isBlackSquare);
