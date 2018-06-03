@@ -1,6 +1,5 @@
 package Graphics;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -8,11 +7,11 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
-import Chess.Board;
+import Chess.Game;
 
 public class Canvas extends JPanel implements MouseListener {
 	
-	private Board background = null;
+	private Game game;
 	private ScreenComponent components[];
 	private int numberOfComponents;
 	
@@ -37,12 +36,8 @@ public class Canvas extends JPanel implements MouseListener {
 		return true;
 	}
 	
-	public boolean addBoard(Board background) {
-		if (this.background != null) {
-			return false;
-		}
-		this.background = background;
-		return true;
+	public void newGame(Game game) {
+		this.game = game;
 	}
 	
 	private int pixelXToColumn(int pixelX) {
@@ -56,9 +51,6 @@ public class Canvas extends JPanel implements MouseListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (background != null) {
-			background.draw(g, cellHeight, cellWidth);
-		}
 		for (int componentIndex = 0; componentIndex < numberOfComponents; componentIndex++) {
 			components[componentIndex].draw(g, cellHeight, cellWidth);
 		}
@@ -66,8 +58,8 @@ public class Canvas extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent event) {
-		if (background != null) {
-			background.clickOnCell(pixelYToRow(event.getY()), pixelXToColumn(event.getX()));
+		if (game != null) {
+			game.clickOnCell(pixelYToRow(event.getY()), pixelXToColumn(event.getX()));
 			this.repaint();
 		}
 	}

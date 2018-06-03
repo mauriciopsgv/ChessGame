@@ -16,13 +16,17 @@ public class MainWindow extends JFrame {
         super.setSize(800, 800);
         
         canvas = new Canvas();
+		Game chessGame = new Game();
+		newGame(chessGame);
+		
         this.setContentPane(canvas);
         super.pack();
         super.setVisible(true);
 	}
 	
-	public boolean addBackgroundToCanvas(Board background) {
-		return this.canvas.addBoard(background);
+	public void newGame(Game game) {
+		this.canvas.newGame(game);
+		game.newGame(this);
 	}
 	
 	public boolean addComponentToCanvas(ScreenComponent component) {
@@ -34,12 +38,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		
 		MainWindow window = new MainWindow();
-		Board chessBoard = new Board();
-		window.addBackgroundToCanvas(chessBoard);
-		Game chessGame = new Game();
-		chessGame.newGame(window);
 		window.repaint();
 	}
 }

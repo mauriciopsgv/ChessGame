@@ -8,6 +8,7 @@ import Graphics.ScreenComponent;
 public class Cell implements ScreenComponent {
 	private int row;
 	private int column;
+	private int pieceId = -1;
 	private Color color;
 	private boolean isSelected;
 	private Color highlightColor = new Color(255,0,0);
@@ -25,6 +26,18 @@ public class Cell implements ScreenComponent {
 	
 	public int getColumn() {
 		return column;
+	}
+	
+	public int getPieceId() {
+		return pieceId;
+	}
+	
+	public void movePieceOut() {
+		pieceId = -1;
+	}
+	
+	public void movePieceIn(int pieceId) {
+		this.pieceId = pieceId;
 	}
 	
 	public void selectCell() {

@@ -13,13 +13,16 @@ import Graphics.ScreenComponent;
 
 public class Piece implements ImageObserver, ScreenComponent {
 	
+	private int id;
+	
 	protected Side side = Side.BLANK;
 	
 	protected BufferedImage image;
 	
 	protected int position[];
 	
-	protected Piece(Side side, int row, int column) {
+	protected Piece(int id, Side side, int row, int column) {
+		this.id = id;
 		this.side = side;
 		position = new int[2];
 		position[0] = row;
@@ -34,6 +37,23 @@ public class Piece implements ImageObserver, ScreenComponent {
 		}
 	}
 	
+	public int getId() {
+		return this.id;
+	}
+	
+	public int getRow() {
+		return this.position[0];
+	}
+	
+	public int getColumn() {
+		return this.position[1];
+	}
+	
+	protected void movePiece(int newRow, int newColumn) {
+		position[0] = newRow;
+		position[1] = newColumn;
+	}
+	
 	public void draw(Graphics g, int cellHeight, int cellWidth) {
 		// TODO Auto-generated method stub
 		int horizontalPadding = (cellWidth - 64)/2;
@@ -41,6 +61,7 @@ public class Piece implements ImageObserver, ScreenComponent {
 		g.drawImage(image, position[1] * cellHeight + verticalPadding, 
 						   position[0] * cellWidth + horizontalPadding, this);
 	}
+	
 	@Override
 	public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
 		// TODO Auto-generated method stub
