@@ -21,16 +21,25 @@ public class MainWindow extends JFrame {
         super.setVisible(true);
 	}
 	
+	public boolean addBackgroundToCanvas(Board background) {
+		return this.canvas.addBoard(background);
+	}
+	
 	public boolean addComponentToCanvas(ScreenComponent component) {
 		 return this.canvas.addComponent(component);
+	}
+	
+	public void repaint() {
+		this.canvas.repaint();
 	}
 
 	public static void main(String[] args) {
 		
 		MainWindow window = new MainWindow();
 		Board chessBoard = new Board();
-		window.addComponentToCanvas(chessBoard);
+		window.addBackgroundToCanvas(chessBoard);
 		Game chessGame = new Game();
 		chessGame.newGame(window);
+		window.repaint();
 	}
 }

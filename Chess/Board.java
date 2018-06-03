@@ -9,6 +9,10 @@ public class Board implements ScreenComponent {
 	
 	private Cell cells[][];
 	
+	boolean isAnyCellHighlighted = false;
+	int highlightedCellRow;
+	int highlightedCellColumn;
+	
 	public Board() {
 		cells = new Cell[8][8];
 		boolean isBlackSquare = true;
@@ -36,4 +40,19 @@ public class Board implements ScreenComponent {
 			}
 		}
 	}
+	
+	public void clickOnCell(int row, int column) {
+		if (isAnyCellHighlighted) {
+			cells[highlightedCellRow][highlightedCellColumn].deselectCell();
+			isAnyCellHighlighted = false;
+			//TODO: Validate and Do action
+		}
+		else {
+			cells[row][column].selectCell();
+			highlightedCellRow = row;
+			highlightedCellColumn = column;
+			isAnyCellHighlighted = true;
+		}
+	}
+	
 }
