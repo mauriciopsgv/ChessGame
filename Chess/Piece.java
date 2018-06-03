@@ -19,14 +19,12 @@ public class Piece implements ImageObserver, ScreenComponent {
 	
 	protected BufferedImage image;
 	
-	protected int position[];
+	protected Position position;
 	
 	protected Piece(int id, Side side, int row, int column) {
 		this.id = id;
 		this.side = side;
-		position = new int[2];
-		position[0] = row;
-		position[1] = column;
+		this.position = new Position(row, column);
 	}
 	
 	protected void loadImage(String imagePath) {
@@ -42,24 +40,25 @@ public class Piece implements ImageObserver, ScreenComponent {
 	}
 	
 	public int getRow() {
-		return this.position[0];
+		return this.position.row;
 	}
 	
 	public int getColumn() {
-		return this.position[1];
+		return this.position.column;
 	}
 	
-	protected void movePiece(int newRow, int newColumn) {
-		position[0] = newRow;
-		position[1] = newColumn;
+	protected boolean movePiece(int newRow, int newColumn) {
+		position.row = newRow;
+		position.column = newColumn;
+		return true;
 	}
 	
 	public void draw(Graphics g, int cellHeight, int cellWidth) {
 		// TODO Auto-generated method stub
 		int horizontalPadding = (cellWidth - 64)/2;
 		int verticalPadding = (cellHeight - 64)/2;
-		g.drawImage(image, position[1] * cellHeight + verticalPadding, 
-						   position[0] * cellWidth + horizontalPadding, this);
+		g.drawImage(image, position.column * cellHeight + verticalPadding, 
+						   position.row * cellWidth + horizontalPadding, this);
 	}
 	
 	@Override

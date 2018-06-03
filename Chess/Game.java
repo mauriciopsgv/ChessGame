@@ -114,8 +114,9 @@ public class Game {
 			int selectedPieceId = chessBoard.getSelectedPieceId();
 			if (selectedPieceId != -1) {
 				Piece pieceToBeMoved = pieces.get(selectedPieceId);
-				pieceToBeMoved.movePiece(row, column);
-				chessBoard.movePieceTo(chessBoard.getSelectedPosition(), new Position(row, column));	
+				if (pieceToBeMoved.movePiece(row, column)) {
+					chessBoard.movePieceTo(chessBoard.getSelectedPosition(), new Position(row, column));	
+				}
 			}
 			chessBoard.deselectCell();
 		} else {
