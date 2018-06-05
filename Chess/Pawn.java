@@ -13,4 +13,47 @@ public class Pawn extends Piece {
 			super.loadImage("src/PurpleP.png");
 		}
 	}
+	
+	private boolean isAbove(Position newPosition) {
+		return newPosition.row - getRow() < 0;
+	}
+	
+	private boolean isBelow(Position newPosition) {
+		return newPosition.row - getRow() > 0;
+	}
+	
+	private boolean isRightDirection(Position newPosition) {
+		if (side == Side.WHITE) {
+			return isAbove(newPosition);
+		}
+		return isBelow(newPosition);
+		
+	}
+	
+	private boolean isInStartingPosition() {
+		if (side == Side.WHITE) {
+			return getRow() == 6;
+		}
+		return getRow() == 1;
+	}
+	
+	private boolean canMoveTo(Position newPosition) {
+		//TODO: finish peao movement
+		int numberOfSquaresItCanMove = 1;
+		if (!isSamePosition(newPosition)) {
+			if (isInStartingPosition()) {
+				numberOfSquaresItCanMove = 2;
+			}
+			return isVertical(newPosition) && isRightDirection(newPosition) && isNear(newPosition, numberOfSquaresItCanMove);
+		}
+		return false;
+	}
+	
+	@Override
+	protected boolean movePiece(Position newPosition) {
+		if (this.canMoveTo(newPosition)) {
+			return super.movePiece(newPosition);
+		}
+		return false;
+	}
 }

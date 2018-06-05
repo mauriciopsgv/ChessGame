@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 import Chess.Game;
+import Chess.Position;
 
 public class Canvas extends JPanel implements MouseListener {
 	
@@ -59,7 +60,7 @@ public class Canvas extends JPanel implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		if (game != null) {
-			game.clickOnCell(pixelYToRow(event.getY()), pixelXToColumn(event.getX()));
+			game.clickOnCell(new Position(pixelYToRow(event.getY()), pixelXToColumn(event.getX())));
 			this.repaint();
 		}
 	}

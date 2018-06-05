@@ -13,4 +13,19 @@ public class King extends Piece {
 			super.loadImage("src/PurpleK.png");
 		}
 	}
+	
+	private boolean canMoveTo(Position newPosition) {
+		if (!isSamePosition(newPosition)) {
+			return isNear(newPosition, 1);
+		}
+		return false;
+	}
+	
+	@Override
+	protected boolean movePiece(Position newPosition) {
+		if (this.canMoveTo(newPosition)) {
+			return super.movePiece(newPosition);
+		}
+		return false;
+	}
 }

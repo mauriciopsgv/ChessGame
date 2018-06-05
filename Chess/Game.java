@@ -1,7 +1,6 @@
 package Chess;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import Graphics.MainWindow;
 
@@ -23,12 +22,12 @@ public class Game {
 	public void newGame(MainWindow window) {
 		clearGame();
 		
-		// TODO: Make this function not ugly af
+		// TODO: Make this function not ugly
 		
 		// Adding board
 		window.addComponentToCanvas(chessBoard);
 		
-		// White side
+		// Black side
 		
 		// Initialize
 		for (int i = 0; i < 8; i++) {
@@ -66,7 +65,7 @@ public class Game {
 		pieces.put(kw.getId(), kw);
 		window.addComponentToCanvas(kw);
 		
-		// Black side
+		// White side
 		
 		// Pawn Row
 		for (int i = 0; i < 8; i++) {
@@ -109,18 +108,18 @@ public class Game {
 		}		
 	}
 	
-	public void clickOnCell(int row, int column) {
+	public void clickOnCell(Position newPosition) {
 		if (chessBoard.isAnyCellSelected()) {
 			int selectedPieceId = chessBoard.getSelectedPieceId();
 			if (selectedPieceId != -1) {
 				Piece pieceToBeMoved = pieces.get(selectedPieceId);
-				if (pieceToBeMoved.movePiece(row, column)) {
-					chessBoard.movePieceTo(chessBoard.getSelectedPosition(), new Position(row, column));	
+				if (pieceToBeMoved.movePiece(newPosition)) {
+					chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
 				}
 			}
 			chessBoard.deselectCell();
 		} else {
-			this.chessBoard.selectCell(new Position(row, column));
+			this.chessBoard.selectCell(newPosition);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package Chess;
 
 import Chess.Side;
+import Chess.Position;
 
 public class Bishop extends Piece {
 
@@ -14,14 +15,17 @@ public class Bishop extends Piece {
 		}
 	}
 	
-	private boolean canMoveTo(int newRow, int newColumn) {
-		return Math.abs(newRow - this.getRow()) == Math.abs(newColumn - this.getColumn());
+	private boolean canMoveTo(Position newPosition) {
+		if (!isSamePosition(newPosition)) {
+			return isDiagonal(newPosition);
+		}
+		return false;
 	}
 	
 	@Override
-	protected boolean movePiece(int newRow, int newColumn) {
-		if (this.canMoveTo(newRow, newColumn)) {
-			return super.movePiece(newRow, newColumn);
+	protected boolean movePiece(Position newPosition) {
+		if (this.canMoveTo(newPosition)) {
+			return super.movePiece(newPosition);
 		}
 		return false;
 	}

@@ -47,9 +47,30 @@ public class Piece implements ImageObserver, ScreenComponent {
 		return this.position.column;
 	}
 	
-	protected boolean movePiece(int newRow, int newColumn) {
-		position.row = newRow;
-		position.column = newColumn;
+	public boolean isSamePosition(Position newPosition) {
+		return newPosition == position;
+	}
+	
+	public boolean isNear(Position newPosition, int numSquares) {
+		return Math.abs(newPosition.column - position.column) <= numSquares &&
+			Math.abs(newPosition.row - position.row) <= numSquares;
+	}
+	
+	public boolean isVertical(Position newPosition) {
+		return (newPosition.column - position.column) == 0;
+	}
+	
+	public boolean isHorizontal(Position newPosition) {
+		return (newPosition.row - position.row) == 0;
+	}
+	
+	public boolean isDiagonal(Position newPosition) {
+		return Math.abs(newPosition.row - position.row) == Math.abs(newPosition.column - position.column);
+	}
+	
+	protected boolean movePiece(Position newPosition) {
+		position.row = newPosition.row;
+		position.column = newPosition.column;
 		return true;
 	}
 	
