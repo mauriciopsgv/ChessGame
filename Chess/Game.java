@@ -10,7 +10,16 @@ public class Game {
 	
 	private HashMap<Integer, Piece> pieces;
 	
-	public Game() {
+	private MainWindow window;
+	
+	public static void main(String[] args) {
+		MainWindow window = new MainWindow();
+		Game game = new Game(window);
+		game.newGame();
+	}
+	
+	public Game(MainWindow window) {
+		this.window = window;
 		clearGame();
 	}
 	
@@ -19,8 +28,9 @@ public class Game {
 		pieces = new HashMap<Integer, Piece>();
 	}
 	
-	public void newGame(MainWindow window) {
+	public void newGame() {
 		clearGame();
+		window.newGame(this);
 		
 		// TODO: Make this function not ugly
 		
@@ -105,16 +115,33 @@ public class Game {
 		
 		for (Piece currentPiece : pieces.values()) {
 	        chessBoard.putPieceAt(currentPiece.getId(), new Position(currentPiece.getRow(), currentPiece.getColumn()));
-		}		
+		}
+		
+		window.repaint();
+	}
+	
+	private boolean areEnemiePieces(int pieceId1, int pieceId2) {
+		Piece piece1 = (Piece) pieces.get(pieceId1);
+		Piece piece2 = (Piece) pieces.get(pieceId2);
+		return piece1.getSide() != piece2.getSide();
 	}
 	
 	public void clickOnCell(Position newPosition) {
 		if (chessBoard.isAnyCellSelected()) {
-			int selectedPieceId = chessBoard.getSelectedPieceId();
-			if (selectedPieceId != -1) {
-				Piece pieceToBeMoved = pieces.get(selectedPieceId);
-				if (pieceToBeMoved.movePiece(newPosition)) {
-					chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
+			if (chessBoard.isSelectedCellOccupied()) {
+				Piece pieceToBeMoved = pieces.get(chessBoard.getSelectedPieceId());
+				if (chessBoard.isCellOccupied(newPosition)) {
+					int selectedPieceId = chessBoard.getSelectedPieceId();
+					int targetPieceId = chessBoard.getCellPieceId(newPosition);
+					if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.capturePiece(newPosition)) {					
+						Piece pieceToBeRemoved = pieces.remove(targetPieceId);
+						window.removeComponentFromCanvas(pieceToBeRemoved);
+						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
+					}
+				} else {
+					if (pieceToBeMoved.movePiece(newPosition)) {
+						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
+					}
 				}
 			}
 			chessBoard.deselectCell();

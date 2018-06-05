@@ -14,17 +14,9 @@ public class Queen extends Piece {
 		}
 	}
 	
-	private boolean canMoveTo(Position newPosition) {
+	protected boolean canMoveTo(Position newPosition) {
 		if (!isSamePosition(newPosition)) {
 			return isVertical(newPosition) || isHorizontal(newPosition) || isDiagonal(newPosition);
-		}
-		return false;
-	}
-	
-	@Override
-	protected boolean movePiece(Position newPosition) {
-		if (this.canMoveTo(newPosition)) {
-			return super.movePiece(newPosition);
 		}
 		return false;
 	}

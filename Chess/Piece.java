@@ -39,6 +39,10 @@ public class Piece implements ImageObserver, ScreenComponent {
 		return this.id;
 	}
 	
+	public Side getSide() {
+		return this.side;
+	}
+	
 	public int getRow() {
 		return this.position.row;
 	}
@@ -68,10 +72,22 @@ public class Piece implements ImageObserver, ScreenComponent {
 		return Math.abs(newPosition.row - position.row) == Math.abs(newPosition.column - position.column);
 	}
 	
-	protected boolean movePiece(Position newPosition) {
-		position.row = newPosition.row;
-		position.column = newPosition.column;
+	protected boolean canMoveTo(Position newPosition) {
+		// Pieces should Override this method, think on a better way to force this
 		return true;
+	}
+	
+	protected boolean movePiece(Position newPosition) {
+		if (this.canMoveTo(newPosition)) {
+			position.row = newPosition.row;
+			position.column = newPosition.column;
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean capturePiece(Position newPosition) {
+		return movePiece(newPosition);
 	}
 	
 	public void draw(Graphics g, int cellHeight, int cellWidth) {

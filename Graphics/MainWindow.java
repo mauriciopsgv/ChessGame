@@ -3,7 +3,6 @@ package Graphics;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import Chess.Board;
 import Chess.Game;
 
 public class MainWindow extends JFrame {
@@ -16,8 +15,6 @@ public class MainWindow extends JFrame {
         super.setSize(800, 800);
         
         canvas = new Canvas();
-		Game chessGame = new Game();
-		newGame(chessGame);
 		
         this.setContentPane(canvas);
         super.pack();
@@ -25,20 +22,18 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void newGame(Game game) {
-		this.canvas.newGame(game);
-		game.newGame(this);
+		canvas.newGame(game);
 	}
 	
 	public boolean addComponentToCanvas(ScreenComponent component) {
-		 return this.canvas.addComponent(component);
+		 return canvas.addComponent(component);
+	}
+	
+	public boolean removeComponentFromCanvas(ScreenComponent component) {
+		return canvas.removeComponent(component);
 	}
 	
 	public void repaint() {
-		this.canvas.repaint();
-	}
-
-	public static void main(String[] args) {
-		MainWindow window = new MainWindow();
-		window.repaint();
+		canvas.repaint();
 	}
 }

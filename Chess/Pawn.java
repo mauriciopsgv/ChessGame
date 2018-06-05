@@ -37,7 +37,8 @@ public class Pawn extends Piece {
 		return getRow() == 1;
 	}
 	
-	private boolean canMoveTo(Position newPosition) {
+	@Override
+	protected boolean canMoveTo(Position newPosition) {
 		//TODO: finish peao movement
 		int numberOfSquaresItCanMove = 1;
 		if (!isSamePosition(newPosition)) {
@@ -50,9 +51,11 @@ public class Pawn extends Piece {
 	}
 	
 	@Override
-	protected boolean movePiece(Position newPosition) {
-		if (this.canMoveTo(newPosition)) {
-			return super.movePiece(newPosition);
+	protected boolean capturePiece(Position newPosition) {
+		if (isNear(newPosition, 1) && isRightDirection(newPosition) && isDiagonal(newPosition)) {
+			position.row = newPosition.row;
+			position.column = newPosition.column;
+			return true;
 		}
 		return false;
 	}

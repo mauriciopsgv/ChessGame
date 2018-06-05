@@ -47,12 +47,16 @@ public class Board implements ScreenComponent {
 		return -1;
 	}
 	
-	public void draw(Graphics g, int cellHeight, int cellWidth) {
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
-				cells[row][col].draw(g, cellHeight, cellWidth);
-			}
-		}
+	public boolean isSelectedCellOccupied() {
+		return cells[highlightedCellPosition.row][highlightedCellPosition.column].getPieceId() != -1;
+	}
+	
+	public boolean isCellOccupied(Position position) {
+		return cells[position.row][position.column].getPieceId() != -1;
+	}
+	
+	public int getCellPieceId(Position position) {
+		return cells[position.row][position.column].getPieceId();
 	}
 	
 	public void selectCell(Position position) {
@@ -77,4 +81,11 @@ public class Board implements ScreenComponent {
 		cells[toPosition.row][toPosition.column].movePieceIn(pieceId);
 	}
 	
+	public void draw(Graphics g, int cellHeight, int cellWidth) {
+		for (int row = 0; row < 8; row++) {
+			for (int col = 0; col < 8; col++) {
+				cells[row][col].draw(g, cellHeight, cellWidth);
+			}
+		}
+	}
 }

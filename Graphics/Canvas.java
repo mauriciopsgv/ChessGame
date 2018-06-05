@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -13,8 +14,7 @@ import Chess.Position;
 public class Canvas extends JPanel implements MouseListener {
 	
 	private Game game;
-	private ScreenComponent components[];
-	private int numberOfComponents;
+	private ArrayList<ScreenComponent> components;
 	
 	int cellHeight = 100; 
 	int cellWidth = 100;
@@ -22,19 +22,20 @@ public class Canvas extends JPanel implements MouseListener {
 	private static int maxNumberOfComponents = 33;
 	
 	public Canvas() {
-		components = new ScreenComponent[maxNumberOfComponents];
-		numberOfComponents = 0;
+		components = new ArrayList<ScreenComponent>();
 		setPreferredSize(new Dimension(8*cellWidth,8*cellHeight));
 		addMouseListener(this);
 	}
 	
 	public boolean addComponent(ScreenComponent component) {
-		if (numberOfComponents == maxNumberOfComponents) {
+		if (components.size() >= maxNumberOfComponents) {
 			return false;
 		}
-		components[numberOfComponents] = component;
-		numberOfComponents++;
-		return true;
+		return components.add(component);
+	}
+	
+	public boolean removeComponent(ScreenComponent componentToBeRemoved) {
+		return components.remove(componentToBeRemoved);
 	}
 	
 	public void newGame(Game game) {
@@ -52,8 +53,8 @@ public class Canvas extends JPanel implements MouseListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		for (int componentIndex = 0; componentIndex < numberOfComponents; componentIndex++) {
-			components[componentIndex].draw(g, cellHeight, cellWidth);
+		for(ScreenComponent component : components) {
+			component.draw(g, cellHeight, cellWidth);
 		}
 	}
 
@@ -88,10 +89,4 @@ public class Canvas extends JPanel implements MouseListener {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	public void printMouseInfo(MouseEvent arg0) {
-		System.out.println("getX = " + arg0.getX());
-		System.out.println("getY = " + arg0.getY());
-	}
-
 }

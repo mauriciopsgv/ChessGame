@@ -14,17 +14,10 @@ public class Rook extends Piece {
 		}
 	}
 	
-	private boolean canMoveTo(Position newPosition) {
+	@Override
+	protected boolean canMoveTo(Position newPosition) {
 		if (!isSamePosition(newPosition)) {
 			return isVertical(newPosition) || isHorizontal(newPosition);
-		}
-		return false;
-	}
-	
-	@Override
-	protected boolean movePiece(Position newPosition) {
-		if (this.canMoveTo(newPosition)) {
-			return super.movePiece(newPosition);
 		}
 		return false;
 	}
