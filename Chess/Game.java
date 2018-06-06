@@ -126,6 +126,91 @@ public class Game {
 		return piece1.getSide() != piece2.getSide();
 	}
 	
+	private boolean isCastling(int pieceId1, int pieceId2)
+	{
+		boolean notEnemy = !areEnemiePieces(pieceId1, pieceId2);
+		Piece piece1 = (Piece) pieces.get(pieceId1);	// selected piece
+		Piece piece2 = (Piece) pieces.get(pieceId2);	// destiny piece
+		Side side = piece1.getSide();
+		boolean notMoved = (piece1.nMovements == 0) && (piece1.nMovements == 0);
+		boolean noOccupiedsBetween = false;
+		boolean areRookKing = false;
+
+		if(side == Side.WHITE)
+		{
+			boolean isKing = (piece1.getColumn()==4) && (piece1.getRow()==7);    // verify if is king
+			boolean shortCastling = (piece2.getColumn() == 7) && (piece2.getRow() == 7); // verify if is nearest rook
+			boolean longCastling = (piece2.getColumn() == 0) && (piece2.getRow() == 7);	 // verify if is farther rook
+			if(shortCastling)
+			{
+				noOccupiedsBetween = !chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+1));
+				noOccupiedsBetween = noOccupiedsBetween && !chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+2));
+				areRookKing = true;
+				
+				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
+				{
+					Position selectedPosition = chessBoard.getSelectedPosition();
+					Position rookPosition = new Position(7,7);
+					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,(selectedPosition.column+2)));	
+					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,(rookPosition.column-2)));	
+				}
+			}
+			else if(longCastling)
+			{
+				noOccupiedsBetween = chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-1));
+				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-2));
+				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-3));
+				areRookKing = true;
+				
+				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
+				{
+					Position selectedPosition = chessBoard.getSelectedPosition();
+					Position rookPosition = new Position(7,0);
+					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,selectedPosition.column-2));	
+					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,rookPosition.column+3));	
+				}
+			}
+			
+		}
+		else
+		{
+			boolean isKing = (piece1.getColumn()==4) && (piece1.getRow()==0);    // verify if is king
+			boolean shortCastling = (piece2.getColumn() == 7) && (piece2.getRow() == 0); // verify if is nearest rook
+			boolean longCastling = (piece2.getColumn() == 0) && (piece2.getRow() == 0);	 // verify if is farther rook
+			if(shortCastling)
+			{
+				noOccupiedsBetween = chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+1));
+				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+2));
+				areRookKing = true;
+				
+				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
+				{
+					Position selectedPosition = chessBoard.getSelectedPosition();
+					Position rookPosition = new Position(0,7);
+					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,selectedPosition.column+2));	
+					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,rookPosition.column-2));	
+				}
+			}
+			else if(longCastling)
+			{
+				noOccupiedsBetween = chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-1));
+				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-2));
+				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-3));
+				areRookKing = true;
+				
+				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
+				{
+					Position selectedPosition = chessBoard.getSelectedPosition();
+					Position rookPosition = new Position(0,0);
+					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,selectedPosition.column-2));	
+					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,rookPosition.column+3));	
+				}
+			}
+		}
+		
+		return (notEnemy && notMoved && noOccupiedsBetween && areRookKing);
+	}
+	
 	public void clickOnCell(Position newPosition) {
 		if (chessBoard.isAnyCellSelected()) {
 			if (chessBoard.isSelectedCellOccupied()) {
@@ -138,6 +223,11 @@ public class Game {
 						window.removeComponentFromCanvas(pieceToBeRemoved);
 						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
 					}
+					else
+					{
+						isCastling(selectedPieceId, targetPieceId);
+					}
+					
 				} else {
 					if (pieceToBeMoved.movePiece(newPosition)) {
 						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
