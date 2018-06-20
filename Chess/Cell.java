@@ -41,7 +41,7 @@ public class Cell implements ScreenComponent {
 	}
 	
 	public void selectCell() {
-		isSelected = !isSelected;
+		isSelected = true;
 	}
 	
 	public void deselectCell() {
@@ -54,6 +54,6 @@ public class Cell implements ScreenComponent {
 		} else {
 			g.setColor(color);
 		}
-		g.fillRect(cellHeight*column, cellWidth*row, cellHeight, cellWidth);
+		g.fillRect(cellHeight*column, cellWidth*row, cellHeight - 5, cellWidth - 5);
 	}
 }

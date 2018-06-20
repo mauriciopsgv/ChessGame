@@ -52,28 +52,27 @@ public class Piece implements ImageObserver, ScreenComponent {
 	}
 	
 	public boolean isSamePosition(Position newPosition) {
-		return newPosition == position;
+		return Position.isSamePosition(newPosition, position);
 	}
 	
 	public boolean isNear(Position newPosition, int numSquares) {
-		return Math.abs(newPosition.column - position.column) <= numSquares &&
-			Math.abs(newPosition.row - position.row) <= numSquares;
+		return Position.isNear(newPosition, position, numSquares);
 	}
 	
 	public boolean isVertical(Position newPosition) {
-		return (newPosition.column - position.column) == 0;
+		return Position.isVertical(newPosition, position);
 	}
 	
 	public boolean isHorizontal(Position newPosition) {
-		return (newPosition.row - position.row) == 0;
+		return Position.isHorizontal(newPosition, position);
 	}
 	
 	public boolean isDiagonal(Position newPosition) {
-		return Math.abs(newPosition.row - position.row) == Math.abs(newPosition.column - position.column);
+		return Position.isDiagonal(newPosition, position);
 	}
 	
+	// Pieces should Override this method, think on a better way to force this
 	protected boolean canMoveTo(Position newPosition) {
-		// Pieces should Override this method, think on a better way to force this
 		return true;
 	}
 	
@@ -86,8 +85,17 @@ public class Piece implements ImageObserver, ScreenComponent {
 		return false;
 	}
 	
+	protected boolean canCapturePiece(Position newPosition) {
+		return canMoveTo(newPosition);
+	}
+	
 	protected boolean capturePiece(Position newPosition) {
-		return movePiece(newPosition);
+		if (this.canCapturePiece(newPosition)) {
+			position.row = newPosition.row;
+			position.column = newPosition.column;
+			return true;
+		}
+		return false;
 	}
 	
 	public void draw(Graphics g, int cellHeight, int cellWidth) {

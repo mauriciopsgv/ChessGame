@@ -51,12 +51,7 @@ public class Pawn extends Piece {
 	}
 	
 	@Override
-	protected boolean capturePiece(Position newPosition) {
-		if (isNear(newPosition, 1) && isRightDirection(newPosition) && isDiagonal(newPosition)) {
-			position.row = newPosition.row;
-			position.column = newPosition.column;
-			return true;
-		}
-		return false;
+	protected boolean canCapturePiece(Position newPosition) {
+		return isNear(newPosition, 1) && isRightDirection(newPosition) && isDiagonal(newPosition);
 	}
 }
