@@ -95,6 +95,13 @@ public class Board implements ScreenComponent {
 		cells[toPosition.row][toPosition.column].movePieceIn(pieceId);
 	}
 	
+	public void movePieceToAbsolute(Position fromPosition, Position toPosition) 
+	{
+		int pieceId = cells[fromPosition.row][fromPosition.column].getPieceId();
+		cells[fromPosition.row][fromPosition.column].movePieceOut();
+		cells[toPosition.row][toPosition.column].movePieceIn(pieceId);
+	}
+	
 	public void draw(Graphics g, int cellHeight, int cellWidth) {
 		for (int row = 0; row < 8; row++) {
 			for (int col = 0; col < 8; col++) {

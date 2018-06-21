@@ -21,10 +21,13 @@ public class Piece implements ImageObserver, ScreenComponent {
 	
 	protected Position position;
 	
+	protected int nMovements;
+	
 	protected Piece(int id, Side side, int row, int column) {
 		this.id = id;
 		this.side = side;
 		this.position = new Position(row, column);
+		this.nMovements = 0;
 	}
 	
 	protected void loadImage(String imagePath) {
@@ -80,6 +83,7 @@ public class Piece implements ImageObserver, ScreenComponent {
 		if (this.canMoveTo(newPosition)) {
 			position.row = newPosition.row;
 			position.column = newPosition.column;
+			nMovements = nMovements + 1;
 			return true;
 		}
 		return false;
