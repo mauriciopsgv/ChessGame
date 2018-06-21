@@ -27,6 +27,18 @@ public class Canvas extends JPanel implements MouseListener {
 		addMouseListener(this);
 	}
 	
+	public boolean copyComponents(ArrayList<ScreenComponent> newComponents) {
+		if (components.size() + newComponents.size() > maxNumberOfComponents) {
+			return false;
+		}
+		for (ScreenComponent newComponent : newComponents) {
+			if (!components.add(newComponent)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public boolean addComponent(ScreenComponent component) {
 		if (components.size() >= maxNumberOfComponents) {
 			return false;
@@ -37,7 +49,7 @@ public class Canvas extends JPanel implements MouseListener {
 	public boolean removeComponent(ScreenComponent componentToBeRemoved) {
 		return components.remove(componentToBeRemoved);
 	}
-	
+
 	public void newGame(Game game) {
 		this.game = game;
 	}

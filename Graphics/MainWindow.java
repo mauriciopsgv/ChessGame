@@ -1,5 +1,7 @@
 package Graphics;
 
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -24,7 +26,11 @@ public class MainWindow extends JFrame {
 	public void newGame(Game game) {
 		canvas.newGame(game);
 	}
-	
+
+	public boolean copyComponentsToCanvas(ArrayList<ScreenComponent> newComponents) {
+		return canvas.copyComponents(newComponents);
+	}
+
 	public boolean addComponentToCanvas(ScreenComponent component) {
 		 return canvas.addComponent(component);
 	}
