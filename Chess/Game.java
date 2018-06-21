@@ -169,20 +169,31 @@ public class Game {
 			
 		} 
 		if (Position.isDiagonal(startingPositionOriginal, endPositionOriginal)) {
-			return false;
-//			Create two different modes to define how to translate
-//			if (endPosition.row < startingPosition.row) {
-//				Position swapPosition = startingPosition;
-//				startingPosition = endPosition;
-//				endPosition = swapPosition;
-//			}
-//			startingPosition.row++;
-//			startingPosition.column++;
-//			for (Position currentPosition = startingPosition; currentPosition != endPosition; currentPosition.row++, currentPosition.column++) {
-//				if (chessBoard.isCellOccupied(currentPosition)) {
-//					return true;
-//				}
-//			}
+			Position startingPosition = new Position(startingPositionOriginal.row, startingPositionOriginal.column);
+			Position endPosition = new Position(endPositionOriginal.row, endPositionOriginal.column);
+
+			if (endPosition.row < startingPosition.row) {
+				Position swapPosition = startingPosition;
+				startingPosition = endPosition;
+				endPosition = swapPosition;
+			}
+			startingPosition.row++;
+
+			if (startingPosition.column > endPosition.column) {
+				startingPosition.column--;
+				for (Position currentPosition = startingPosition; !Position.isSamePosition(currentPosition, endPosition); currentPosition.row++, currentPosition.column--) {
+					if (chessBoard.isCellOccupied(currentPosition)) {
+						return true;
+					}
+				}
+			} else {
+				startingPosition.column++;
+				for (Position currentPosition = startingPosition; !Position.isSamePosition(currentPosition, endPosition); currentPosition.row++, currentPosition.column++) {
+					if (chessBoard.isCellOccupied(currentPosition)) {
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}
