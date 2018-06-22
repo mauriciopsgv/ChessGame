@@ -54,6 +54,10 @@ public class Piece implements ImageObserver, ScreenComponent {
 		return this.position.column;
 	}
 	
+	public Position getPosition() {
+		return this.position;
+	}
+	
 	public boolean isSamePosition(Position newPosition) {
 		return Position.isSamePosition(newPosition, position);
 	}

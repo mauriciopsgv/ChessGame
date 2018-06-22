@@ -9,6 +9,11 @@ public class Position {
 		this.column = column;
 	}
 	
+	public Position(Position pos) {
+		row = pos.row;
+		column = pos.column;
+	}
+	
 	public static boolean isSamePosition(Position pos1, Position pos2) {
 		return pos1.row == pos2.row && pos1.column == pos2.column;
 	}

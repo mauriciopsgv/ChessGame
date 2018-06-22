@@ -10,7 +10,7 @@ public class Game {
 	
 	private Board chessBoard;
 	
-	private HashMap<Integer, Piece> pieces;
+	private PieceManager pieces;
 	
 	private MainWindow window;
 	
@@ -27,7 +27,7 @@ public class Game {
 	
 	private void clearGame() {
 		chessBoard = new Board();
-		pieces = new HashMap<Integer, Piece>();
+		pieces = new PieceManager();
 	}
 	
 	public void newGame() {
@@ -47,78 +47,82 @@ public class Game {
 		// Initialize
 		for (int i = 0; i < 8; i++) {
 			Pawn p = new Pawn(Side.BLACK, 1, i);
-			pieces.put(p.getId(), p);
+			pieces.put(p);
 			initialPieces.add(p);
 		}
 		
-		Rook r1w = new Rook(Side.BLACK, 0, 0);
-		Rook r2w = new Rook(Side.BLACK, 0, 7);
-		pieces.put(r1w.getId(), r1w);
-		pieces.put(r2w.getId(), r2w);
-		initialPieces.add(r1w);
-		initialPieces.add(r2w);
+		Rook r1b = new Rook(Side.BLACK, 0, 0);
+		Rook r2b = new Rook(Side.BLACK, 0, 7);
+		pieces.put(r1b);
+		pieces.put(r2b);
+		initialPieces.add(r1b);
+		initialPieces.add(r2b);
 		
-		Knight k1w = new Knight(Side.BLACK, 0, 1);
-		Knight k2w = new Knight(Side.BLACK, 0, 6);
-		pieces.put(k1w.getId(), k1w);
-		pieces.put(k2w.getId(), k2w);
-		initialPieces.add(k1w);
-		initialPieces.add(k2w);
+		Knight k1b = new Knight(Side.BLACK, 0, 1);
+		Knight k2b = new Knight(Side.BLACK, 0, 6);
+		pieces.put(k1b);
+		pieces.put(k2b);
+		initialPieces.add(k1b);
+		initialPieces.add(k2b);
 		
-		Bishop b1w = new Bishop(Side.BLACK, 0, 2);
-		Bishop b2w = new Bishop(Side.BLACK, 0, 5);
-		pieces.put(b1w.getId(), b1w);
-		pieces.put(b2w.getId(), b2w);
-		initialPieces.add(b1w);
-		initialPieces.add(b2w);
+		Bishop b1b = new Bishop(Side.BLACK, 0, 2);
+		Bishop b2b = new Bishop(Side.BLACK, 0, 5);
+		pieces.put(b1b);
+		pieces.put(b2b);
+		initialPieces.add(b1b);
+		initialPieces.add(b2b);
 		
-		Queen qw = new Queen(Side.BLACK, 0, 3);
-		pieces.put(qw.getId(), qw);
-		initialPieces.add(qw);
+		Queen qb = new Queen(Side.BLACK, 0, 3);
+		pieces.put(qb);
+		initialPieces.add(qb);
 
-		King kw = new King(Side.BLACK, 0, 4);
-		pieces.put(kw.getId(), kw);
-		initialPieces.add(kw);
+		King kb = new King(Side.BLACK, 0, 4);
+		pieces.putBlackKing(kb);
+		initialPieces.add(kb);
 		
 		// White side
 		
 		// Pawn Row
 		for (int i = 0; i < 8; i++) {
 			Pawn p = new Pawn(Side.WHITE, 6, i);
-			pieces.put(p.getId(), p);
+			pieces.put(p);
 			initialPieces.add(p);
 		}
 		
-		Rook r1b = new Rook(Side.WHITE, 7, 0);
-		Rook r2b = new Rook(Side.WHITE, 7, 7);
-		pieces.put(r1b.getId(), r1b);
-		pieces.put(r2b.getId(), r2b);
-		initialPieces.add(r1b);
-		initialPieces.add(r2b);
+		Rook r1w = new Rook(Side.WHITE, 7, 0);
+		Rook r2w = new Rook(Side.WHITE, 7, 7);
+		pieces.put(r1w);
+		pieces.put(r2w);
+		initialPieces.add(r1w);
+		initialPieces.add(r2w);
 		
-		Knight k1b = new Knight(Side.WHITE, 7, 1);
-		Knight k2b = new Knight(Side.WHITE, 7, 6);
-		pieces.put(k1b.getId(), k1b);
-		pieces.put(k2b.getId(), k2b);
-		initialPieces.add(k1b);
-		initialPieces.add(k2b);
+		Knight k1w = new Knight(Side.WHITE, 7, 1);
+		Knight k2w = new Knight(Side.WHITE, 7, 6);
+		pieces.put(k1w);
+		pieces.put(k2w);
+		initialPieces.add(k1w);
+		initialPieces.add(k2w);
 		
-		Bishop b1b = new Bishop(Side.WHITE, 7, 2);
-		Bishop b2b = new Bishop(Side.WHITE, 7, 5);
-		pieces.put(b1b.getId(), b1b);
-		pieces.put(b2b.getId(), b2b);
-		initialPieces.add(b1b);
-		initialPieces.add(b2b);
+		Bishop b1w = new Bishop(Side.WHITE, 7, 2);
+		Bishop b2w = new Bishop(Side.WHITE, 7, 5);
+		pieces.put(b1w);
+		pieces.put(b2w);
+		initialPieces.add(b1w);
+		initialPieces.add(b2w);
 		
-		Queen qb = new Queen(Side.WHITE, 7, 3);
-		pieces.put(qb.getId(), qb);
-		initialPieces.add(qb);
+		Queen qw = new Queen(Side.WHITE, 7, 3);
+		pieces.put(qw);
+		initialPieces.add(qw);
 		
-		King kb = new King(Side.WHITE, 7, 4);
-		pieces.put(kb.getId(), kb);
-		initialPieces.add(kb);
+		King kw = new King(Side.WHITE, 7, 4);
+		pieces.putWhiteKing(kw);
+		initialPieces.add(kw);
 		
-		for (Piece currentPiece : pieces.values()) {
+		for (Piece currentPiece : pieces.whitePieces()) {
+	        chessBoard.putPieceAt(currentPiece.getId(), new Position(currentPiece.getRow(), currentPiece.getColumn()));
+		}
+		
+		for (Piece currentPiece : pieces.blackPieces()) {
 	        chessBoard.putPieceAt(currentPiece.getId(), new Position(currentPiece.getRow(), currentPiece.getColumn()));
 		}
 		
@@ -137,8 +141,8 @@ public class Game {
 			return false;
 		} 
 		if (Position.isVertical(startingPositionOriginal, endPositionOriginal)) {
-			Position startingPosition = new Position(startingPositionOriginal.row, startingPositionOriginal.column);
-			Position endPosition = new Position(endPositionOriginal.row, endPositionOriginal.column);
+			Position startingPosition = new Position(startingPositionOriginal);
+			Position endPosition = new Position(endPositionOriginal);
 			if (endPosition.row < startingPosition.row) {
 				Position swapPosition = startingPosition;
 				startingPosition = endPosition;
@@ -153,8 +157,8 @@ public class Game {
 								
 		} 
 		if (Position.isHorizontal(startingPositionOriginal, endPositionOriginal)) {
-			Position startingPosition = new Position(startingPositionOriginal.row, startingPositionOriginal.column);
-			Position endPosition = new Position(endPositionOriginal.row, endPositionOriginal.column);
+			Position startingPosition = new Position(startingPositionOriginal);
+			Position endPosition = new Position(endPositionOriginal);
 			if (endPosition.column < startingPosition.column) {
 				Position swapPosition = startingPosition;
 				startingPosition = endPosition;
@@ -169,8 +173,8 @@ public class Game {
 			
 		} 
 		if (Position.isDiagonal(startingPositionOriginal, endPositionOriginal)) {
-			Position startingPosition = new Position(startingPositionOriginal.row, startingPositionOriginal.column);
-			Position endPosition = new Position(endPositionOriginal.row, endPositionOriginal.column);
+			Position startingPosition = new Position(startingPositionOriginal);
+			Position endPosition = new Position(endPositionOriginal);
 
 			if (endPosition.row < startingPosition.row) {
 				Position swapPosition = startingPosition;
@@ -219,7 +223,20 @@ public class Game {
 					}
 				}
 			}
+			// Insira highlight do menino Roque aqui	
 		}
+	}
+	
+	private boolean isKingOnCheck(Side side) {
+		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
+		Piece king = pieces.getKing(side);
+		for (Piece opponentPiece : pieces.getPieces(opponentSide)) {
+			if (!isAnyPieceOnTheWay(opponentPiece.getPosition(), king.getPosition()) &&
+				opponentPiece.canCapturePiece(king.getPosition())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean isCastling(int pieceId1, int pieceId2)
@@ -307,14 +324,17 @@ public class Game {
 		return (notEnemy && notMoved && noOccupiedsBetween && areRookKing);
 	}
 	
+	//TODO: bug found clicking on the top right corner rook, selecting then clicking again on it
+	//TODO: bug not highlighting a piece the Pawn can capture
+	//TODO: highlight takes block in consideration, movement not
 	public void clickOnCell(Position newPosition) {
 		if (chessBoard.isAnyCellSelected()) {
-			if (chessBoard.isSelectedCellOccupied()) {
+			if (chessBoard.isSelectedCellOccupied()) { // There is a piece to be moved in the selected cell
 				Piece pieceToBeMoved = pieces.get(chessBoard.getSelectedPieceId());
-				if (chessBoard.isCellOccupied(newPosition)) {
+				if (chessBoard.isCellOccupied(newPosition)) { // There is a piece in the position where you want to move
 					int selectedPieceId = chessBoard.getSelectedPieceId();
 					int targetPieceId = chessBoard.getCellPieceId(newPosition);
-					if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.canCapturePiece(newPosition)) {
+					if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
 						pieceToBeMoved.capturePiece(newPosition);
 						Piece pieceToBeRemoved = pieces.remove(targetPieceId);
 						window.removeComponentFromCanvas(pieceToBeRemoved);
@@ -332,6 +352,9 @@ public class Game {
 				}
 			}
 			chessBoard.deselectCell();
+			if (this.isKingOnCheck(Side.WHITE) || this.isKingOnCheck(Side.BLACK)) {
+				window.triggerAlert("CHEQUE");
+			}
 		} else {
 			chessBoard.selectCell(newPosition);
 			highlightPossibleMovements(newPosition);
