@@ -58,6 +58,10 @@ public class Piece implements ImageObserver, ScreenComponent {
 		return this.position;
 	}
 	
+	public boolean hasMove() {
+		return nMovements != 0;
+	}
+
 	public boolean isSamePosition(Position newPosition) {
 		return Position.isSamePosition(newPosition, position);
 	}
@@ -87,7 +91,7 @@ public class Piece implements ImageObserver, ScreenComponent {
 		if (this.canMoveTo(newPosition)) {
 			position.row = newPosition.row;
 			position.column = newPosition.column;
-			nMovements = nMovements + 1;
+			nMovements++;
 			return true;
 		}
 		return false;

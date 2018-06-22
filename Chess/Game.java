@@ -239,89 +239,30 @@ public class Game {
 		return false;
 	}
 	
-	private boolean isCastling(int pieceId1, int pieceId2)
-	{
-		boolean notEnemy = !areEnemiePieces(pieceId1, pieceId2);
-		Piece piece1 = (Piece) pieces.get(pieceId1);	// selected piece
-		Piece piece2 = (Piece) pieces.get(pieceId2);	// destiny piece
-		Side side = piece1.getSide();
-		boolean notMoved = (piece1.nMovements == 0) && (piece1.nMovements == 0);
-		boolean noOccupiedsBetween = false;
-		boolean areRookKing = false;
+	//TODO: Missing highlight for possible castling
+	//TODO: Not checking for xeque after movement
+	private boolean canDoCastling(Piece king, Piece rook) {
+		if (!(king instanceof King) || !(rook instanceof Rook)) {
+			return false;
+		}
+		return !king.hasMove() && !rook.hasMove() && !isKingOnCheck(king.getSide()) &&
+			   !isAnyPieceOnTheWay(king.getPosition(), rook.getPosition());
+	}
 
-		if(side == Side.WHITE)
-		{
-			boolean isKing = (piece1.getColumn()==4) && (piece1.getRow()==7);    // verify if is king
-			boolean shortCastling = (piece2.getColumn() == 7) && (piece2.getRow() == 7); // verify if is nearest rook
-			boolean longCastling = (piece2.getColumn() == 0) && (piece2.getRow() == 7);	 // verify if is farther rook
-			if(shortCastling)
-			{
-				noOccupiedsBetween = !chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+1));
-				noOccupiedsBetween = noOccupiedsBetween && !chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+2));
-				areRookKing = true;
-				
-				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
-				{
-					Position selectedPosition = chessBoard.getSelectedPosition();
-					Position rookPosition = new Position(7,7);
-					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,(selectedPosition.column+2)));	
-					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,(rookPosition.column-2)));	
-				}
-			}
-			else if(longCastling)
-			{
-				noOccupiedsBetween = chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-1));
-				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-2));
-				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-3));
-				areRookKing = true;
-				
-				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
-				{
-					Position selectedPosition = chessBoard.getSelectedPosition();
-					Position rookPosition = new Position(7,0);
-					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,selectedPosition.column-2));	
-					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,rookPosition.column+3));	
-				}
-			}
-			
+	private void doCastling(Piece king, Piece rook) {
+		Position kingOriginalPosition = new Position(king.getPosition());
+		Position rookOriginalPosition = new Position(rook.getPosition());
+		if (king.getPosition().column < rook.getPosition().column) {
+			king.movePiece(new Position(king.getRow(), king.getColumn() + 1));
+			king.movePiece(new Position(king.getRow(), king.getColumn() + 1));
+			rook.movePiece(new Position(king.getRow(), king.getColumn() - 1));
+		} else {
+			king.movePiece(new Position(king.getRow(), king.getColumn() - 1));
+			king.movePiece(new Position(king.getRow(), king.getColumn() - 1));
+			rook.movePiece(new Position(king.getRow(), king.getColumn() + 1));
 		}
-		else
-		{
-			boolean isKing = (piece1.getColumn()==4) && (piece1.getRow()==0);    // verify if is king
-			boolean shortCastling = (piece2.getColumn() == 7) && (piece2.getRow() == 0); // verify if is nearest rook
-			boolean longCastling = (piece2.getColumn() == 0) && (piece2.getRow() == 0);	 // verify if is farther rook
-			if(shortCastling)
-			{
-				noOccupiedsBetween = chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+1));
-				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()+2));
-				areRookKing = true;
-				
-				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
-				{
-					Position selectedPosition = chessBoard.getSelectedPosition();
-					Position rookPosition = new Position(0,7);
-					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,selectedPosition.column+2));	
-					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,rookPosition.column-2));	
-				}
-			}
-			else if(longCastling)
-			{
-				noOccupiedsBetween = chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-1));
-				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-2));
-				noOccupiedsBetween = noOccupiedsBetween && chessBoard.isCellOccupied(new Position(piece1.getRow(),piece1.getColumn()-3));
-				areRookKing = true;
-				
-				if(notEnemy && notMoved && noOccupiedsBetween && areRookKing)
-				{
-					Position selectedPosition = chessBoard.getSelectedPosition();
-					Position rookPosition = new Position(0,0);
-					chessBoard.movePieceToAbsolute(chessBoard.getSelectedPosition(), new Position(selectedPosition.row,selectedPosition.column-2));	
-					chessBoard.movePieceToAbsolute(rookPosition, new Position(rookPosition.row,rookPosition.column+3));	
-				}
-			}
-		}
-		
-		return (notEnemy && notMoved && noOccupiedsBetween && areRookKing);
+		chessBoard.movePieceTo(kingOriginalPosition, king.getPosition());
+		chessBoard.movePieceToAbsolute(rookOriginalPosition, rook.getPosition());
 	}
 	
 	//TODO: bug found clicking on the top right corner rook, selecting then clicking again on it
@@ -340,9 +281,11 @@ public class Game {
 						window.removeComponentFromCanvas(pieceToBeRemoved);
 						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
 					}
-					else
-					{
-						isCastling(selectedPieceId, targetPieceId);
+					else {
+						Piece targetPiece = pieces.get(targetPieceId);
+						if (canDoCastling(pieceToBeMoved, targetPiece)) {
+							doCastling(pieceToBeMoved, targetPiece);
+						}
 					}
 					
 				} else {
