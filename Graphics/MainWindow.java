@@ -3,6 +3,8 @@ package Graphics;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import Chess.Game;
@@ -11,10 +13,13 @@ public class MainWindow extends JFrame {
 	
 	private Canvas canvas;
 	
+	private int mainWindowWidth = 800;
+	private int mainWindowHeight = 800;
+
 	public MainWindow() {
         super("Chess Game");
         super.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        super.setSize(800, 800);
+        super.setSize(mainWindowWidth, mainWindowHeight);
         
         canvas = new Canvas();
 		
@@ -39,6 +44,22 @@ public class MainWindow extends JFrame {
 		return canvas.removeComponent(component);
 	}
 	
+	public void triggerAlert(String alertMessage) {
+		int alertWidth = 300;
+		int alertHeight = 100;
+		JFrame alertPanel = new JFrame();
+
+		JLabel alertLabel = new JLabel(alertMessage);
+		alertLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		alertLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+		alertPanel.add(alertLabel);
+
+		alertPanel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		alertPanel.setSize(alertWidth, alertHeight);
+		alertPanel.setLocation((mainWindowWidth - alertWidth)/2, (mainWindowHeight - alertHeight)/2);
+		alertPanel.setVisible(true);
+	}
+
 	public void repaint() {
 		canvas.repaint();
 	}
