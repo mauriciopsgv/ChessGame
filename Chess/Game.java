@@ -267,40 +267,49 @@ public class Game {
 	
 	//TODO: bug found clicking on the top right corner rook, selecting then clicking again on it
 	//TODO: bug not highlighting a piece the Pawn can capture
-	//TODO: highlight takes block in consideration, movement not
 	public void clickOnCell(Position newPosition) {
+		Side currentOpponentSideTurn = TurnManager.getCurrentOpponentSide();
 		if (chessBoard.isAnyCellSelected()) {
 			if (chessBoard.isSelectedCellOccupied()) { // There is a piece to be moved in the selected cell
 				Piece pieceToBeMoved = pieces.get(chessBoard.getSelectedPieceId());
-				if (chessBoard.isCellOccupied(newPosition)) { // There is a piece in the position where you want to move
-					int selectedPieceId = chessBoard.getSelectedPieceId();
-					int targetPieceId = chessBoard.getCellPieceId(newPosition);
-					if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
-						pieceToBeMoved.capturePiece(newPosition);
-						Piece pieceToBeRemoved = pieces.remove(targetPieceId);
-						window.removeComponentFromCanvas(pieceToBeRemoved);
-						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
-					}
-					else {
-						Piece targetPiece = pieces.get(targetPieceId);
-						if (canDoCastling(pieceToBeMoved, targetPiece)) {
-							doCastling(pieceToBeMoved, targetPiece);
+				if (TurnManager.isPieceAllowedToMove(pieceToBeMoved)) {
+					if (chessBoard.isCellOccupied(newPosition)) { // There is a piece in the position where you want to move
+						int selectedPieceId = chessBoard.getSelectedPieceId();
+						int targetPieceId = chessBoard.getCellPieceId(newPosition);
+						if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
+							pieceToBeMoved.capturePiece(newPosition);
+							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
+							window.removeComponentFromCanvas(pieceToBeRemoved);
+							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
+							TurnManager.finishTurn();
 						}
-					}
-					
-				} else {
-					if (pieceToBeMoved.movePiece(newPosition)) {
-						chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);	
+						else {
+							Piece targetPiece = pieces.get(targetPieceId);
+							if (canDoCastling(pieceToBeMoved, targetPiece)) {
+								doCastling(pieceToBeMoved, targetPiece);
+								TurnManager.finishTurn();
+							}
+						}
+						
+					} else {
+						if (!isAnyPieceOnTheWay(pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
+							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
+							TurnManager.finishTurn();
+						}
 					}
 				}
 			}
 			chessBoard.deselectCell();
-			if (this.isKingOnCheck(Side.WHITE) || this.isKingOnCheck(Side.BLACK)) {
+			//TODO: xeque only makes sense to one side each turn
+			if (this.isKingOnCheck(currentOpponentSideTurn)) {
 				window.triggerAlert("CHEQUE");
 			}
 		} else {
-			chessBoard.selectCell(newPosition);
-			highlightPossibleMovements(newPosition);
+			Piece possiblePieceToSelect = pieces.get(chessBoard.getCellPieceId(newPosition));
+			if (possiblePieceToSelect != null && TurnManager.isPieceAllowedToMove(possiblePieceToSelect)) {
+				chessBoard.selectCell(newPosition);
+				highlightPossibleMovements(newPosition);
+			}
 		}
 	}
 }
