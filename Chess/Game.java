@@ -454,11 +454,13 @@ public class Game {
 		if (chessBoard.isAnyCellSelected()) {
 			if (chessBoard.isSelectedCellOccupied()) { // There is a piece to be moved in the selected cell
 				Piece pieceToBeMoved = pieces.get(chessBoard.getSelectedPieceId());
-				if (turnManager.isPieceAllowedToMove(pieceToBeMoved)) {
+				if (turnManager.isPieceAllowedToMove(pieceToBeMoved) ) {
 					if (chessBoard.isCellOccupied(newPosition)) { // There is a piece in the position where you want to move
 						int selectedPieceId = chessBoard.getSelectedPieceId();
 						int targetPieceId = chessBoard.getCellPieceId(newPosition);
-						if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
+						if (areEnemiePieces(selectedPieceId, targetPieceId) && 
+								isSafeToMoveToCell(chessBoard.getSelectedPosition(), newPosition) && 
+								pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
 							pieceToBeMoved.capturePiece(newPosition);
 							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
 							mainWindow.removeComponentFromCanvas(pieceToBeRemoved);
@@ -479,7 +481,9 @@ public class Game {
 						}
 						
 					} else {
-						if (!isAnyPieceOnTheWay(chessBoard, pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
+						if (!isAnyPieceOnTheWay(chessBoard, pieceToBeMoved.getPosition(), newPosition) &&
+								isSafeToMoveToCell(chessBoard.getSelectedPosition(), newPosition) &&
+								pieceToBeMoved.movePiece(newPosition)) {
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
 							pieces.recordLastMovedPiece(pieceToBeMoved);
 							if (shouldPromotePawn(pieceToBeMoved)) {
