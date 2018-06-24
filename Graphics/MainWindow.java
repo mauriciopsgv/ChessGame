@@ -1,9 +1,13 @@
 package Graphics;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
@@ -44,6 +48,51 @@ public class MainWindow extends JFrame {
 		return canvas.removeComponent(component);
 	}
 	
+   public void showPromotePawnMenu(){
+	  JFrame popup = new JFrame();
+	  popup.setSize(100, 250);
+
+	  JPopupMenu promotePawnMenu = new JPopupMenu("PromotePawn"); 
+	
+	  JMenuItem bishopOption = new JMenuItem("Bishop");
+	  bishopOption.setActionCommand("Bishop");
+	
+	  JMenuItem knightOption = new JMenuItem("Knight");
+	  knightOption.setActionCommand("Knight");
+	
+	  JMenuItem queenOption = new JMenuItem("Queen");
+	  queenOption.setActionCommand("Queen");
+	  
+	  JMenuItem pawnOption = new JMenuItem("Pawn");
+	  pawnOption.setActionCommand("Pawn");
+	  
+	  JMenuItem rookOption = new JMenuItem("Rook");
+	  rookOption.setActionCommand("Rook");
+		
+//	  cutMenuItem.addActionListener(menuItemListener);
+//	  copyMenuItem.addActionListener(menuItemListener);
+//	  pasteMenuItem.addActionListener(menuItemListener);
+	  
+	  MenuItemListenerGambiarra listener = new MenuItemListenerGambiarra(canvas.game, this);
+	  bishopOption.addActionListener(listener);
+	  knightOption.addActionListener(listener);
+	  queenOption.addActionListener(listener);
+	  pawnOption.addActionListener(listener);
+	  rookOption.addActionListener(listener);
+
+	  promotePawnMenu.add(bishopOption);
+	  promotePawnMenu.add(knightOption);
+	  promotePawnMenu.add(queenOption);
+	  promotePawnMenu.add(pawnOption);
+	  promotePawnMenu.add(rookOption);
+	  promotePawnMenu.setVisible(true);
+
+	  popup.add(promotePawnMenu);
+	  popup.setLocation(mainWindowWidth/2, mainWindowHeight/2);
+	  popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	  popup.setVisible(true); 
+   }
+	
 	public void triggerAlert(String alertMessage) {
 		int alertWidth = 300;
 		int alertHeight = 100;
@@ -58,6 +107,20 @@ public class MainWindow extends JFrame {
 		alertPanel.setSize(alertWidth, alertHeight);
 		alertPanel.setLocation((mainWindowWidth - alertWidth)/2, (mainWindowHeight - alertHeight)/2);
 		alertPanel.setVisible(true);
+	}
+	
+	class MenuItemListenerGambiarra implements ActionListener {
+		private Game game;
+		private MainWindow window;
+		
+		MenuItemListenerGambiarra (Game game, MainWindow window) {
+			this.game = game;
+			this.window = window;
+		}
+		public void actionPerformed(ActionEvent e) {            
+	         game.promotePawn(e.getActionCommand());
+	         window.repaint();
+		}
 	}
 
 	public void repaint() {

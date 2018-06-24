@@ -276,6 +276,32 @@ public class Game {
 		}
 		return false;
 	}
+	
+	public boolean promotePawn(String promotedClass) {
+		Piece lastMovedPiece = pieces.getLastMovedPiece();
+		if (shouldPromotePawn(lastMovedPiece)) {
+			Piece newPiece;
+			pieces.remove(lastMovedPiece.getId());
+			if (promotedClass == "Bishop") {
+				newPiece = new Bishop(lastMovedPiece.getSide(), lastMovedPiece.getRow(), lastMovedPiece.getColumn());
+			} else if (promotedClass == "Knight") {
+				newPiece = new Knight(lastMovedPiece.getSide(), lastMovedPiece.getRow(), lastMovedPiece.getColumn());
+			} else if (promotedClass == "Queen") {
+				newPiece = new Queen(lastMovedPiece.getSide(), lastMovedPiece.getRow(), lastMovedPiece.getColumn());
+			} else if (promotedClass == "Rook") {
+				newPiece = new Rook(lastMovedPiece.getSide(), lastMovedPiece.getRow(), lastMovedPiece.getColumn());
+			} else {
+				newPiece = new Pawn(lastMovedPiece.getSide(), lastMovedPiece.getRow(), lastMovedPiece.getColumn());
+			}
+			pieces.put(newPiece);
+			chessBoard.putPieceAt(newPiece.getId(), newPiece.getPosition());
+			window.removeComponentFromCanvas(lastMovedPiece);
+			window.addComponentToCanvas(newPiece);
+			window.repaint();
+			return true;
+		}
+		return false;
+	}
 
 	public void clickOnCell(Position newPosition) {
 		Side currentOpponentSideTurn = TurnManager.getCurrentOpponentSide();
@@ -291,8 +317,9 @@ public class Game {
 							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
 							window.removeComponentFromCanvas(pieceToBeRemoved);
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
+							pieces.recordLastMovedPiece(pieceToBeMoved);
 							if (shouldPromotePawn(pieceToBeMoved)) {
-
+								window.showPromotePawnMenu();
 							}
 							TurnManager.finishTurn();
 						}
@@ -300,6 +327,7 @@ public class Game {
 							Piece targetPiece = pieces.get(targetPieceId);
 							if (canDoCastling(pieceToBeMoved, targetPiece)) {
 								doCastling(pieceToBeMoved, targetPiece);
+								pieces.recordLastMovedPiece(targetPiece);
 								TurnManager.finishTurn();
 							}
 						}
@@ -307,8 +335,9 @@ public class Game {
 					} else {
 						if (!isAnyPieceOnTheWay(pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
+							pieces.recordLastMovedPiece(pieceToBeMoved);
 							if (shouldPromotePawn(pieceToBeMoved)) {
-
+								window.showPromotePawnMenu();
 							}
 							TurnManager.finishTurn();
 						}

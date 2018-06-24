@@ -10,6 +10,7 @@ public class PieceManager {
 	
 	private int blackKingId = -1;
 	private int whiteKingId = -1;
+	private int lastMovedPiece = -1;
 
 	public PieceManager() {
 		whitePieces = new HashMap<Integer, Piece>();
@@ -82,5 +83,13 @@ public class PieceManager {
 			return whitePieces();
 		}
 		return blackPieces();
+	}
+	
+	public void recordLastMovedPiece(Piece p) {
+		lastMovedPiece = p.getId();
+	}
+	
+	public Piece getLastMovedPiece() {
+		return get(lastMovedPiece);
 	}
 }

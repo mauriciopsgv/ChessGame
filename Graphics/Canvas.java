@@ -13,7 +13,7 @@ import Chess.Position;
 
 public class Canvas extends JPanel implements MouseListener {
 	
-	private Game game;
+	public Game game;
 	private ArrayList<ScreenComponent> components;
 	
 	int cellHeight = 100; 
