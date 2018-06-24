@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import Graphics.InitialWindow;
 import Graphics.MainWindow;
 import Graphics.ScreenComponent;
+import Graphics.Threat;
 
 public class Game {
 	
@@ -312,7 +313,7 @@ public class Game {
 		return false;
 	}
 	
-	private boolean isKingOnCheckMate(Side side) {
+	private Threat isKingThreated(Side side) {
 		
 		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
 		Piece king = pieces.getKing(side);
@@ -339,7 +340,7 @@ public class Game {
 		
 		int pMS = pMF.size();
 		int pMC = 0;
-		
+		int drown = 0;
 		for (Piece opponentPiece : pieces.getPieces(opponentSide)) {
 			for(Position pos : pMF) {
 				if(pos.row >= 0 && pos.column >= 0 && pos.row < 8 && pos.column < 8) {
@@ -351,12 +352,20 @@ public class Game {
 					}
 				}
 			}
+			
+			if(!isAnyPieceOnTheWay(opponentPiece.getPosition(),kingPosition)
+					&& opponentPiece.canCapturePiece(kingPosition)) {
+					drown++;
+				}
 		}
 		
 		// Maior igual porque uma casa pode ser ameaçada por mais de uma peça
-		if(pMC >= pMS) return true;
-		else return false;
+		if(pMC >= pMS && drown == 0) return Threat.DROWNING;
+		else if(pMC >= pMS && drown > 0) return Threat.CHECKMATE;
+		else if(pMC < pMS && pMC != 0 && drown > 0) return Threat.CHECK;
+		return Threat.SAFE;
 	}
+	
 	
 	//TODO: Missing highlight for possible castling
 	//TODO: Not checking for xeque after movement
@@ -467,15 +476,18 @@ public class Game {
 			}
 			chessBoard.deselectCell();
 			//TODO: xeque only makes sense to one side each turn
-			if (this.isKingOnCheck(currentOpponentSideTurn)) {
-				if(this.isKingOnCheckMate(currentOpponentSideTurn)) {
+			Threat kingStatus = this.isKingThreated(currentOpponentSideTurn);
+			if(kingStatus != Threat.SAFE) {
+				if(kingStatus == Threat.CHECKMATE) {
 					mainWindow.triggerAlert("CHEQUE-MATE");
 				}
+				else if(kingStatus == Threat.CHECK){
+					mainWindow.triggerAlert("CHEQUE");
+				}
 				else {
-				mainWindow.triggerAlert("CHEQUE");
+					mainWindow.triggerAlert("EMPATE");
 				}
 			}
-
 		} else {
 			Piece possiblePieceToSelect = pieces.get(chessBoard.getCellPieceId(newPosition));
 			if (possiblePieceToSelect != null && turnManager.isPieceAllowedToMove(possiblePieceToSelect)) {
