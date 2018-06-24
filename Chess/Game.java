@@ -263,13 +263,11 @@ public class Game {
 	}
 	
 	private boolean isPossibleToMoveToCell(Piece pieceToBeMoved, Position startingPosition, Position endPosition) {
-		if (pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition)) {
-			if (!chessBoard.isCellOccupied(endPosition) || 
-				areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition))) {
-				return true;
-			}
+		if (chessBoard.isCellOccupied(endPosition) ) {
+			return pieceToBeMoved.canCapturePiece(endPosition) &&
+					areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition));
 		}
-		return false;
+		return pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition);
 	}
 			
 	private void highlightPossibleMovements(Position selectedPosition) {
