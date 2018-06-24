@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileWriter;
 import java.util.ArrayList;
+
 
 import javax.swing.JPanel;
 
@@ -75,6 +77,10 @@ public class Canvas extends JPanel implements MouseListener {
 		if (game != null) {
 			game.clickOnCell(new Position(pixelYToRow(event.getY()), pixelXToColumn(event.getX())));
 			this.repaint();
+		}
+		if(event.getButton() == MouseEvent.BUTTON3)
+		{
+			game.saveGame();
 		}
 	}
 

@@ -23,4 +23,8 @@ public class TurnManager {
 	public static boolean isPieceAllowedToMove(Piece piece) {
 		return piece.getSide() == currentPlayerTurn;
 	}
+	
+	public static void setCurrentSide(Side side) {
+		currentPlayerTurn = side;
+	}
 }

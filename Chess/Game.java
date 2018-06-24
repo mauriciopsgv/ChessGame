@@ -1,8 +1,14 @@
 package Chess;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 
+import javax.swing.JFileChooser;
+
+import Graphics.InitialWindow;
 import Graphics.MainWindow;
 import Graphics.ScreenComponent;
 
@@ -12,112 +18,162 @@ public class Game {
 	
 	private PieceManager pieces;
 	
-	private MainWindow window;
+	private MainWindow mainWindow;
+	
+	private InitialWindow initWindow;
 	
 	public static void main(String[] args) {
-		MainWindow window = new MainWindow();
-		Game game = new Game(window);
+		Game game = new Game();
 		game.newGame();
 	}
-	
-	public Game(MainWindow window) {
-		this.window = window;
-		clearGame();
-	}
-	
+		
 	private void clearGame() {
 		chessBoard = new Board();
 		pieces = new PieceManager();
 	}
 	
 	public void newGame() {
-		clearGame();
-		window.newGame(this);
+		initWindow = new InitialWindow();
+		initWindow.addWindowListener(new WindowAdapter() {
+               public void windowClosing(WindowEvent we) {
+            	   ArrayList<Piece> loadedPieces = initWindow.getLoadedPieces();
+                   initGame(loadedPieces);
+               }
+           });
+	}
+	
+	private void initGame(ArrayList<Piece> loadedPieces) {
 		
-		// TODO: Make this function not ugly
+		mainWindow = new MainWindow();
+		clearGame();
+		mainWindow.newGame(this);
 		
 		// Adding board
-		window.addComponentToCanvas(chessBoard);
+		mainWindow.addComponentToCanvas(chessBoard);
 		
 		// Adding Pieces
 		ArrayList<ScreenComponent> initialPieces = new ArrayList<ScreenComponent>();
+		
+ 	   if(loadedPieces.size() != 0) {
+ 		   // Load game as it is
+ 		   for(Piece sc : loadedPieces)
+ 		   {
+ 			   if(sc instanceof King) {
+ 				   King k = (King) sc;
+ 				   if(k.getSide() == Side.BLACK) {
+ 					   pieces.putBlackKing(k);
+ 				   }
+ 				   else {
+ 					   pieces.putWhiteKing(k);
+ 				   }
+ 		 		   initialPieces.add(k);
+ 			   }
+ 			   else if(sc instanceof Queen) {
+ 				   Queen q = (Queen) sc;
+		 		   pieces.put(q);
+		 		   initialPieces.add(q);
+ 			   }
+ 			   else if(sc instanceof Rook) {
+ 				  Rook q = (Rook) sc;
+		 		   pieces.put(q);
+		 		   initialPieces.add(q);
+ 			   }
+ 			   else if(sc instanceof Bishop) {
+ 				  Bishop q = (Bishop) sc;
+		 		   pieces.put(q);
+		 		   initialPieces.add(q);
+ 			   }
+ 			   else if(sc instanceof Knight) {
+ 				  Knight q = (Knight) sc;
+		 		   pieces.put(q);
+		 		   initialPieces.add(q);
+ 			   }
+ 			   else if(sc instanceof Pawn) {
+ 				  Pawn q = (Pawn) sc;
+		 		   pieces.put(q);
+		 		   initialPieces.add(q);
+ 			   }
+ 		   }
+ 	   }
+ 	   
+ 	   else {
+ 			// Black side
+ 			
+ 			// Initialize
+ 			for (int i = 0; i < 8; i++) {
+ 				Pawn p = new Pawn(Side.BLACK, 1, i);
+ 				pieces.put(p);
+ 				initialPieces.add(p);
+ 			}
+ 			
+ 			Rook r1b = new Rook(Side.BLACK, 0, 0);
+ 			Rook r2b = new Rook(Side.BLACK, 0, 7);
+ 			pieces.put(r1b);
+ 			pieces.put(r2b);
+ 			initialPieces.add(r1b);
+ 			initialPieces.add(r2b);
+ 			
+ 			Knight k1b = new Knight(Side.BLACK, 0, 1);
+ 			Knight k2b = new Knight(Side.BLACK, 0, 6);
+ 			pieces.put(k1b);
+ 			pieces.put(k2b);
+ 			initialPieces.add(k1b);
+ 			initialPieces.add(k2b);
+ 			
+ 			Bishop b1b = new Bishop(Side.BLACK, 0, 2);
+ 			Bishop b2b = new Bishop(Side.BLACK, 0, 5);
+ 			pieces.put(b1b);
+ 			pieces.put(b2b);
+ 			initialPieces.add(b1b);
+ 			initialPieces.add(b2b);
+ 			
+ 			Queen qb = new Queen(Side.BLACK, 0, 3);
+ 			pieces.put(qb);
+ 			initialPieces.add(qb);
 
-		// Black side
-		
-		// Initialize
-		for (int i = 0; i < 8; i++) {
-			Pawn p = new Pawn(Side.BLACK, 1, i);
-			pieces.put(p);
-			initialPieces.add(p);
-		}
-		
-		Rook r1b = new Rook(Side.BLACK, 0, 0);
-		Rook r2b = new Rook(Side.BLACK, 0, 7);
-		pieces.put(r1b);
-		pieces.put(r2b);
-		initialPieces.add(r1b);
-		initialPieces.add(r2b);
-		
-		Knight k1b = new Knight(Side.BLACK, 0, 1);
-		Knight k2b = new Knight(Side.BLACK, 0, 6);
-		pieces.put(k1b);
-		pieces.put(k2b);
-		initialPieces.add(k1b);
-		initialPieces.add(k2b);
-		
-		Bishop b1b = new Bishop(Side.BLACK, 0, 2);
-		Bishop b2b = new Bishop(Side.BLACK, 0, 5);
-		pieces.put(b1b);
-		pieces.put(b2b);
-		initialPieces.add(b1b);
-		initialPieces.add(b2b);
-		
-		Queen qb = new Queen(Side.BLACK, 0, 3);
-		pieces.put(qb);
-		initialPieces.add(qb);
-
-		King kb = new King(Side.BLACK, 0, 4);
-		pieces.putBlackKing(kb);
-		initialPieces.add(kb);
-		
-		// White side
-		
-		// Pawn Row
-		for (int i = 0; i < 8; i++) {
-			Pawn p = new Pawn(Side.WHITE, 6, i);
-			pieces.put(p);
-			initialPieces.add(p);
-		}
-		
-		Rook r1w = new Rook(Side.WHITE, 7, 0);
-		Rook r2w = new Rook(Side.WHITE, 7, 7);
-		pieces.put(r1w);
-		pieces.put(r2w);
-		initialPieces.add(r1w);
-		initialPieces.add(r2w);
-		
-		Knight k1w = new Knight(Side.WHITE, 7, 1);
-		Knight k2w = new Knight(Side.WHITE, 7, 6);
-		pieces.put(k1w);
-		pieces.put(k2w);
-		initialPieces.add(k1w);
-		initialPieces.add(k2w);
-		
-		Bishop b1w = new Bishop(Side.WHITE, 7, 2);
-		Bishop b2w = new Bishop(Side.WHITE, 7, 5);
-		pieces.put(b1w);
-		pieces.put(b2w);
-		initialPieces.add(b1w);
-		initialPieces.add(b2w);
-		
-		Queen qw = new Queen(Side.WHITE, 7, 3);
-		pieces.put(qw);
-		initialPieces.add(qw);
-		
-		King kw = new King(Side.WHITE, 7, 4);
-		pieces.putWhiteKing(kw);
-		initialPieces.add(kw);
-		
+ 			King kb = new King(Side.BLACK, 0, 4);
+ 			pieces.putBlackKing(kb);
+ 			initialPieces.add(kb);
+ 			
+ 			// White side
+ 			
+ 			// Pawn Row
+ 			for (int i = 0; i < 8; i++) {
+ 				Pawn p = new Pawn(Side.WHITE, 6, i);
+ 				pieces.put(p);
+ 				initialPieces.add(p);
+ 			}
+ 			
+ 			Rook r1w = new Rook(Side.WHITE, 7, 0);
+ 			Rook r2w = new Rook(Side.WHITE, 7, 7);
+ 			pieces.put(r1w);
+ 			pieces.put(r2w);
+ 			initialPieces.add(r1w);
+ 			initialPieces.add(r2w);
+ 			
+ 			Knight k1w = new Knight(Side.WHITE, 7, 1);
+ 			Knight k2w = new Knight(Side.WHITE, 7, 6);
+ 			pieces.put(k1w);
+ 			pieces.put(k2w);
+ 			initialPieces.add(k1w);
+ 			initialPieces.add(k2w);
+ 			
+ 			Bishop b1w = new Bishop(Side.WHITE, 7, 2);
+ 			Bishop b2w = new Bishop(Side.WHITE, 7, 5);
+ 			pieces.put(b1w);
+ 			pieces.put(b2w);
+ 			initialPieces.add(b1w);
+ 			initialPieces.add(b2w);
+ 			
+ 			Queen qw = new Queen(Side.WHITE, 7, 3);
+ 			pieces.put(qw);
+ 			initialPieces.add(qw);
+ 			
+ 			King kw = new King(Side.WHITE, 7, 4);
+ 			pieces.putWhiteKing(kw);
+ 			initialPieces.add(kw);
+ 	   }
+ 	   		
 		for (Piece currentPiece : pieces.whitePieces()) {
 	        chessBoard.putPieceAt(currentPiece.getId(), new Position(currentPiece.getRow(), currentPiece.getColumn()));
 		}
@@ -126,8 +182,8 @@ public class Game {
 	        chessBoard.putPieceAt(currentPiece.getId(), new Position(currentPiece.getRow(), currentPiece.getColumn()));
 		}
 		
-		window.copyComponentsToCanvas(initialPieces);
-		window.repaint();
+		mainWindow.copyComponentsToCanvas(initialPieces);
+		mainWindow.repaint();
 	}
 	
 	private boolean areEnemiePieces(int pieceId1, int pieceId2) {
@@ -239,6 +295,43 @@ public class Game {
 		return false;
 	}
 	
+	private boolean isPositionSafe(Side side, Position pos)
+	{
+		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
+		for (Piece opponentPiece : pieces.getPieces(opponentSide)) {
+			if (!isAnyPieceOnTheWay(opponentPiece.getPosition(), pos) &&
+				opponentPiece.canCapturePiece(pos)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean isKingOnCheckMate(Side side) {
+		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
+		Piece king = pieces.getKing(side);
+		Position kingPosition = king.getPosition();
+		
+		ArrayList<Position> possibleMovements = new ArrayList<Position>();
+		
+		for (int i = 0; i < chessBoard.getBoardDimension(); i++) {
+			for (int j = 0; j < chessBoard.getBoardDimension(); j++) {
+				Position possiblePosition = new Position(i,j);
+				if (isPossibleToMoveToCell(king, kingPosition, possiblePosition)) {
+					possibleMovements.add(possiblePosition);
+				}
+			}
+		}
+		
+		for(Position move : possibleMovements)
+		{
+			boolean isSafe = isPositionSafe(opponentSide, move);
+			if(isSafe) return false;
+		}
+		
+		return true;
+	}
+	
 	//TODO: Missing highlight for possible castling
 	//TODO: Not checking for xeque after movement
 	private boolean canDoCastling(Piece king, Piece rook) {
@@ -279,7 +372,7 @@ public class Game {
 						if (areEnemiePieces(selectedPieceId, targetPieceId) && pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
 							pieceToBeMoved.capturePiece(newPosition);
 							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
-							window.removeComponentFromCanvas(pieceToBeRemoved);
+							mainWindow.removeComponentFromCanvas(pieceToBeRemoved);
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
 							TurnManager.finishTurn();
 						}
@@ -301,8 +394,12 @@ public class Game {
 			}
 			chessBoard.deselectCell();
 			//TODO: xeque only makes sense to one side each turn
-			if (this.isKingOnCheck(currentOpponentSideTurn)) {
-				window.triggerAlert("CHEQUE");
+			//if (this.isKingOnCheck(currentOpponentSideTurn)) {
+			//	mainWindow.triggerAlert("CHEQUE");
+			//}
+			//else 
+				if(this.isKingOnCheckMate(currentOpponentSideTurn)) {
+				mainWindow.triggerAlert("CHEQUE-MATE");
 			}
 		} else {
 			Piece possiblePieceToSelect = pieces.get(chessBoard.getCellPieceId(newPosition));
@@ -312,4 +409,80 @@ public class Game {
 			}
 		}
 	}
+	
+	public void saveGame() {
+		final JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showSaveDialog(null);
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+	        try(FileWriter fw = new FileWriter(fc.getSelectedFile()+".txt")){
+	        	
+	        	Collection<Piece> whitePieces = pieces.getPieces(Side.WHITE);
+	        	Collection<Piece> blackPieces = pieces.getPieces(Side.BLACK);
+	        	
+	        	fw.write("Side: ");
+	        	if(TurnManager.getCurrentSide() == Side.WHITE) {
+	        		fw.write("White");
+	        	}
+	        	else {
+	        		fw.write("Black");
+	        	}
+	        	fw.write(System.lineSeparator());
+	        	
+	        	for(Piece whitepiece : whitePieces)
+	        	{
+	        		fw.write("White ");
+	        		Position pos = whitepiece.getPosition();
+	        		if(whitepiece instanceof King) {
+	        			fw.write("King ");
+	        		}
+	        		else if(whitepiece instanceof Queen) {
+	        			fw.write("Queen ");
+	        		}
+	        		else if(whitepiece instanceof Rook) {
+	        			fw.write("Rook ");
+	        		}
+	        		else if(whitepiece instanceof Bishop) {
+	        			fw.write("Bishop ");
+	        		}
+	        		else if(whitepiece instanceof Knight) {
+	        			fw.write("Knight ");
+	        		}
+	        		else if(whitepiece instanceof Pawn) {
+	        			fw.write("Pawn ");
+	        		}
+	        		fw.write(Integer.toString(pos.row) + " " + Integer.toString(pos.column));
+	        		fw.write(System.lineSeparator());
+	        	}
+	        	for(Piece blackpiece : blackPieces)
+	        	{
+	        		fw.write("Black ");
+	        		Position pos = blackpiece.getPosition();
+	        		if(blackpiece instanceof King) {
+	        			fw.write("King ");
+	        		}
+	        		else if(blackpiece instanceof Queen) {
+	        			fw.write("Queen ");
+	        		}
+	        		else if(blackpiece instanceof Rook) {
+	        			fw.write("Rook ");
+	        		}
+	        		else if(blackpiece instanceof Bishop) {
+	        			fw.write("Bishop ");
+	        		}
+	        		else if(blackpiece instanceof Knight) {
+	        			fw.write("Knight ");
+	        		}
+	        		else if(blackpiece instanceof Pawn) {
+	        			fw.write("Pawn ");
+	        		}
+	        		fw.write(Integer.toString(pos.row) + " " + Integer.toString(pos.column));
+	        		fw.write(System.lineSeparator());
+	        	}
+	        	
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	}
+	
 }
