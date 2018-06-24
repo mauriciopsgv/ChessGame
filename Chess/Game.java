@@ -305,6 +305,10 @@ public class Game {
 				return true;
 			}
 		}
+		if(startingPosition.row == endPosition.row &&
+				startingPosition.column == endPosition.column) {
+			return true;
+		}
 		return false;
 	}
 	
@@ -349,7 +353,8 @@ public class Game {
 			}
 		}
 		
-		if(pMC == pMS) return true;
+		// Maior igual porque uma casa pode ser ameaçada por mais de uma peça
+		if(pMC >= pMS) return true;
 		else return false;
 	}
 	
@@ -462,13 +467,15 @@ public class Game {
 			}
 			chessBoard.deselectCell();
 			//TODO: xeque only makes sense to one side each turn
-			//if (this.isKingOnCheck(currentOpponentSideTurn)) {
-			//	mainWindow.triggerAlert("CHEQUE");
-			//}
-			//else 
+			if (this.isKingOnCheck(currentOpponentSideTurn)) {
 				if(this.isKingOnCheckMate(currentOpponentSideTurn)) {
-				mainWindow.triggerAlert("CHEQUE-MATE");
+					mainWindow.triggerAlert("CHEQUE-MATE");
+				}
+				else {
+				mainWindow.triggerAlert("CHEQUE");
+				}
 			}
+
 		} else {
 			Piece possiblePieceToSelect = pieces.get(chessBoard.getCellPieceId(newPosition));
 			if (possiblePieceToSelect != null && turnManager.isPieceAllowedToMove(possiblePieceToSelect)) {
