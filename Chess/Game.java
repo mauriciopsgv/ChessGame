@@ -259,13 +259,15 @@ public class Game {
 	}
 	
 	private boolean isPossibleToMoveToCell(Piece pieceToBeMoved, Position startingPosition, Position endPosition) {
-		if (chessBoard.isCellOccupied(endPosition) ) {
-			return pieceToBeMoved.canCapturePiece(endPosition) &&
-					areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition));
+		if (pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition)) {
+			if (!chessBoard.isCellOccupied(endPosition) || 
+				areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition))) {
+				return true;
+			}
 		}
-		return pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition);
+		return false;
 	}
-	
+			
 	private void highlightPossibleMovements(Position selectedPosition) {
 		if (chessBoard.isCellOccupied(selectedPosition)) {
 			Piece selectedPiece = pieces.get(chessBoard.getSelectedPieceId());
@@ -293,41 +295,59 @@ public class Game {
 		return false;
 	}
 	
-	private boolean isPositionSafe(Side side, Position pos)
-	{
-		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
-		for (Piece opponentPiece : pieces.getPieces(opponentSide)) {
-			if (!isAnyPieceOnTheWay(opponentPiece.getPosition(), pos) &&
-				opponentPiece.canCapturePiece(pos)) {
-				return false;
+	private boolean isPossibleToMoveToCellMate(Piece pieceToBeMoved, Position startingPosition, Position endPosition) {
+		if (pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition)) {
+			if (!chessBoard.isCellOccupied(endPosition) || 
+				areEnemiePieces(chessBoard.getCellPieceId(pieceToBeMoved.getPosition()), chessBoard.getCellPieceId(endPosition))) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	private boolean isKingOnCheckMate(Side side) {
+		
 		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
 		Piece king = pieces.getKing(side);
 		Position kingPosition = king.getPosition();
-		
 		ArrayList<Position> possibleMovements = new ArrayList<Position>();
+		ArrayList<Position> pMF = new ArrayList<Position>();
 		
-		for (int i = 0; i < chessBoard.getBoardDimension(); i++) {
-			for (int j = 0; j < chessBoard.getBoardDimension(); j++) {
-				Position possiblePosition = new Position(i,j);
-				if (isPossibleToMoveToCell(king, kingPosition, possiblePosition)) {
-					possibleMovements.add(possiblePosition);
+		possibleMovements.add(new Position(kingPosition));
+		possibleMovements.add(new Position(kingPosition.row, kingPosition.column + 1));
+		possibleMovements.add(new Position(kingPosition.row, kingPosition.column - 1));
+		possibleMovements.add(new Position(kingPosition.row + 1, kingPosition.column));
+		possibleMovements.add(new Position(kingPosition.row + 1, kingPosition.column + 1));
+		possibleMovements.add(new Position(kingPosition.row + 1, kingPosition.column - 1));
+		possibleMovements.add(new Position(kingPosition.row - 1, kingPosition.column));
+		possibleMovements.add(new Position(kingPosition.row - 1, kingPosition.column + 1));
+		possibleMovements.add(new Position(kingPosition.row - 1, kingPosition.column - 1));
+		
+		for(Position pos : possibleMovements) {
+			if(pos.row >= 0 && pos.column >= 0 && pos.row < 8 && pos.column < 8
+					&& isPossibleToMoveToCellMate(king, kingPosition, pos)) {
+				pMF.add(pos);
+			}
+		}
+		
+		int pMS = pMF.size();
+		int pMC = 0;
+		
+		for (Piece opponentPiece : pieces.getPieces(opponentSide)) {
+			for(Position pos : pMF) {
+				if(pos.row >= 0 && pos.column >= 0 && pos.row < 8 && pos.column < 8) {
+					if (isPossibleToMoveToCellMate(king, kingPosition, pos)) {
+						if(!isAnyPieceOnTheWay(opponentPiece.getPosition(), pos) &&
+								opponentPiece.canCapturePiece(pos)) {
+							pMC++;
+						}
+					}
 				}
 			}
 		}
 		
-		for(Position move : possibleMovements)
-		{
-			boolean isSafe = isPositionSafe(opponentSide, move);
-			if(isSafe) return false;
-		}
-		
-		return true;
+		if(pMC == pMS) return true;
+		else return false;
 	}
 	
 	//TODO: Missing highlight for possible castling
@@ -356,20 +376,8 @@ public class Game {
 		chessBoard.movePieceToAbsolute(rookOriginalPosition, rook.getPosition());
 	}
 	
-	private boolean shouldPromotePawn(Piece pawn) {
-		if (!(pawn instanceof Pawn)) {
-			return false;
-		}
-
-		Position pawnNewPosition = pawn.getPosition();
-		if (pawn.getSide() == Side.WHITE) {
-			return pawnNewPosition.row == 0;
-		} else if (pawn.getSide() == Side.BLACK) {
-			return pawnNewPosition.row == 7;
-		}
-		return false;
-	}
-
+	//TODO: bug found clicking on the top right corner rook, selecting then clicking again on it
+	//TODO: bug not highlighting a piece the Pawn can capture
 	public void clickOnCell(Position newPosition) {
 		Side currentOpponentSideTurn = TurnManager.getCurrentOpponentSide();
 		if (chessBoard.isAnyCellSelected()) {
@@ -384,9 +392,6 @@ public class Game {
 							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
 							mainWindow.removeComponentFromCanvas(pieceToBeRemoved);
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
-							if (shouldPromotePawn(pieceToBeMoved)) {
-
-							}
 							TurnManager.finishTurn();
 						}
 						else {
@@ -400,9 +405,6 @@ public class Game {
 					} else {
 						if (!isAnyPieceOnTheWay(pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
-							if (shouldPromotePawn(pieceToBeMoved)) {
-
-							}
 							TurnManager.finishTurn();
 						}
 					}
