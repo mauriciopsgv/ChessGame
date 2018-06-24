@@ -203,13 +203,11 @@ public class Game {
 	}
 	
 	private boolean isPossibleToMoveToCell(Piece pieceToBeMoved, Position startingPosition, Position endPosition) {
-		if (pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition)) {
-			if (!chessBoard.isCellOccupied(endPosition) || 
-				areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition))) {
-				return true;
-			}
+		if (chessBoard.isCellOccupied(endPosition) ) {
+			return pieceToBeMoved.canCapturePiece(endPosition) &&
+					areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition));
 		}
-		return false;
+		return pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition);
 	}
 	
 	private void highlightPossibleMovements(Position selectedPosition) {
@@ -265,8 +263,20 @@ public class Game {
 		chessBoard.movePieceToAbsolute(rookOriginalPosition, rook.getPosition());
 	}
 	
-	//TODO: bug found clicking on the top right corner rook, selecting then clicking again on it
-	//TODO: bug not highlighting a piece the Pawn can capture
+	private boolean shouldPromotePawn(Piece pawn) {
+		if (!(pawn instanceof Pawn)) {
+			return false;
+		}
+
+		Position pawnNewPosition = pawn.getPosition();
+		if (pawn.getSide() == Side.WHITE) {
+			return pawnNewPosition.row == 0;
+		} else if (pawn.getSide() == Side.BLACK) {
+			return pawnNewPosition.row == 7;
+		}
+		return false;
+	}
+
 	public void clickOnCell(Position newPosition) {
 		Side currentOpponentSideTurn = TurnManager.getCurrentOpponentSide();
 		if (chessBoard.isAnyCellSelected()) {
@@ -281,6 +291,9 @@ public class Game {
 							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
 							window.removeComponentFromCanvas(pieceToBeRemoved);
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
+							if (shouldPromotePawn(pieceToBeMoved)) {
+
+							}
 							TurnManager.finishTurn();
 						}
 						else {
@@ -294,6 +307,9 @@ public class Game {
 					} else {
 						if (!isAnyPieceOnTheWay(pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
+							if (shouldPromotePawn(pieceToBeMoved)) {
+
+							}
 							TurnManager.finishTurn();
 						}
 					}
