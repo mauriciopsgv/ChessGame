@@ -16,6 +16,44 @@ public class PieceManager {
 		whitePieces = new HashMap<Integer, Piece>();
 		blackPieces = new HashMap<Integer, Piece>();
 	}
+	
+	public PieceManager(PieceManager copy) {
+		whitePieces = new HashMap<Integer, Piece>();
+		blackPieces = new HashMap<Integer, Piece>();
+		for (Piece piece: copy.whitePieces.values()) {
+			Piece pieceToAdd = getRightPieceClass(piece);
+			whitePieces.put(piece.getId(), pieceToAdd);
+		}
+		for (Piece piece: copy.blackPieces.values()) {
+			Piece pieceToAdd = getRightPieceClass(piece);
+			blackPieces.put(piece.getId(), pieceToAdd);
+		}
+		blackKingId = copy.getBlackKing().getId();
+		whiteKingId = copy.getWhiteKing().getId();
+		Piece lastMovedPieceCopy = copy.getLastMovedPiece();
+		if (lastMovedPieceCopy == null) {
+			lastMovedPiece = -1;
+		} else {
+			lastMovedPiece = lastMovedPieceCopy.getId();
+		}
+	}
+	
+	private Piece getRightPieceClass (Piece piece) {
+		if (piece instanceof Bishop) {
+			return new Bishop(piece.getSide(), piece.getRow(), piece.getColumn());
+		} else if (piece instanceof King) {
+			return new King(piece.getSide(), piece.getRow(), piece.getColumn());
+		} else if (piece instanceof Knight) {
+			return new Knight(piece.getSide(), piece.getRow(), piece.getColumn());
+		} else if (piece instanceof Pawn) {
+			return new Pawn(piece.getSide(), piece.getRow(), piece.getColumn());
+		} else if (piece instanceof Queen) {
+			return new Queen(piece.getSide(), piece.getRow(), piece.getColumn());
+		} else if (piece instanceof Rook) {
+			return new Rook(piece.getSide(), piece.getRow(), piece.getColumn());
+		}
+		return new Piece(piece.getId() ,piece.getSide(), piece.getRow(), piece.getColumn());
+	}
 
 	public boolean put(Piece p) {
 		if (p.getSide() == Side.WHITE) {

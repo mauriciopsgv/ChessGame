@@ -29,6 +29,29 @@ public class Board implements ScreenComponent {
 		}
 	}
 	
+	public Board(Board copyBoard) {
+		cells = new Cell[8][8];
+		boolean isBlackSquare = false;
+		for (int row = 0; row < 8; row++) {
+			for (int col = 0; col < 8; col++) {
+				if (isBlackSquare) {
+					cells[row][col] = new Cell(row, col, new Color(0,0,0), 
+											copyBoard.getCellPieceId(new Position(row,col)),
+											copyBoard.isCellSelected(new Position(row,col)));
+				} else {
+					cells[row][col] = new Cell(row, col, new Color(255,255,255), 
+							copyBoard.getCellPieceId(new Position(row,col)),
+							copyBoard.isCellSelected(new Position(row,col)));
+				}
+				isBlackSquare = toggleBool(isBlackSquare);
+			}
+			isBlackSquare = toggleBool(isBlackSquare);
+		}
+		
+		isAnyCellSelected = copyBoard.isAnyCellSelected();
+		selectedCellPosition = copyBoard.getSelectedPosition();		
+	}
+	
 	private boolean toggleBool(boolean bool) {
 		return !bool;
 	}
@@ -58,6 +81,10 @@ public class Board implements ScreenComponent {
 	
 	public boolean isCellOccupied(Position position) {
 		return cells[position.row][position.column].getPieceId() != -1;
+	}
+	
+	public boolean isCellSelected(Position position) {
+		return cells[position.row][position.column].isCellSelected();
 	}
 	
 	public int getCellPieceId(Position position) {

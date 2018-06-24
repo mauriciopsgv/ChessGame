@@ -196,7 +196,7 @@ public class Game {
 		return piece1.getSide() != piece2.getSide();
 	}
 		
-	private boolean isAnyPieceOnTheWay(Position startingPositionOriginal, Position endPositionOriginal) {
+	private boolean isAnyPieceOnTheWay(Board chessBoard, Position startingPositionOriginal, Position endPositionOriginal) {
 		if (Position.isSamePosition(startingPositionOriginal, endPositionOriginal)) {
 			return false;
 		} 
@@ -267,7 +267,24 @@ public class Game {
 			return pieceToBeMoved.canCapturePiece(endPosition) &&
 					areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition));
 		}
-		return pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition);
+		return pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(chessBoard, startingPosition, endPosition);
+	}
+	
+	private boolean isSafeToMoveToCell(Position startingPosition, Position endPosition) {
+		Board possibleBoard = new Board(chessBoard);
+		PieceManager possiblePieces = new PieceManager(pieces);
+		Piece pieceToBeMoved = possiblePieces.get(possibleBoard.getCellPieceId(startingPosition));
+
+		if (chessBoard.isCellOccupied(endPosition)) {
+			pieceToBeMoved.capturePiece(endPosition);
+			possiblePieces.remove(chessBoard.getCellPieceId(endPosition));
+		} else {
+			pieceToBeMoved.movePiece(endPosition);
+			possiblePieces.recordLastMovedPiece(pieceToBeMoved);
+		}
+		possibleBoard.movePieceTo(startingPosition, endPosition);
+		
+		return !isKingOnCheck(turnManager.getCurrentSide(), possiblePieces, possibleBoard);
 	}
 			
 	private void highlightPossibleMovements(Position selectedPosition) {
@@ -276,7 +293,8 @@ public class Game {
 			for (int i = 0; i < chessBoard.getBoardDimension(); i++) {
 				for (int j = 0; j < chessBoard.getBoardDimension(); j++) {
 					Position possibleHighlightedPosition = new Position(i,j);
-					if (isPossibleToMoveToCell(selectedPiece, selectedPosition, possibleHighlightedPosition)) {
+					if (isPossibleToMoveToCell(selectedPiece, selectedPosition, possibleHighlightedPosition) &&
+						isSafeToMoveToCell(selectedPosition, possibleHighlightedPosition)) {
 						chessBoard.highlightCell(possibleHighlightedPosition);
 					}
 				}
@@ -285,11 +303,11 @@ public class Game {
 		}
 	}
 	
-	private boolean isKingOnCheck(Side side) {
+	private boolean isKingOnCheck(Side side, PieceManager pieces, Board chessBoard) {
 		Side opponentSide = (side == Side.WHITE) ? Side.BLACK : Side.WHITE;
 		Piece king = pieces.getKing(side);
 		for (Piece opponentPiece : pieces.getPieces(opponentSide)) {
-			if (!isAnyPieceOnTheWay(opponentPiece.getPosition(), king.getPosition()) &&
+			if (!isAnyPieceOnTheWay(chessBoard, opponentPiece.getPosition(), king.getPosition()) &&
 				opponentPiece.canCapturePiece(king.getPosition())) {
 				return true;
 			}
@@ -298,7 +316,7 @@ public class Game {
 	}
 	
 	private boolean isPossibleToMoveToCellMate(Piece pieceToBeMoved, Position startingPosition, Position endPosition) {
-		if (pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(startingPosition, endPosition)) {
+		if (pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(chessBoard, startingPosition, endPosition)) {
 			if (!chessBoard.isCellOccupied(endPosition) || 
 				areEnemiePieces(chessBoard.getCellPieceId(pieceToBeMoved.getPosition()), chessBoard.getCellPieceId(endPosition))) {
 				return true;
@@ -343,7 +361,7 @@ public class Game {
 			for(Position pos : pMF) {
 				if(pos.row >= 0 && pos.column >= 0 && pos.row < 8 && pos.column < 8) {
 					if (isPossibleToMoveToCellMate(king, kingPosition, pos)) {
-						if(!isAnyPieceOnTheWay(opponentPiece.getPosition(), pos) &&
+						if(!isAnyPieceOnTheWay(chessBoard, opponentPiece.getPosition(), pos) &&
 								opponentPiece.canCapturePiece(pos)) {
 							pMC++;
 						}
@@ -351,7 +369,7 @@ public class Game {
 				}
 			}
 			
-			if(!isAnyPieceOnTheWay(opponentPiece.getPosition(),kingPosition)
+			if(!isAnyPieceOnTheWay(chessBoard, opponentPiece.getPosition(),kingPosition)
 					&& opponentPiece.canCapturePiece(kingPosition)) {
 					drown++;
 				}
@@ -371,8 +389,8 @@ public class Game {
 		if (!(king instanceof King) || !(rook instanceof Rook)) {
 			return false;
 		}
-		return !king.hasMove() && !rook.hasMove() && !isKingOnCheck(king.getSide()) &&
-			   !isAnyPieceOnTheWay(king.getPosition(), rook.getPosition());
+		return !king.hasMove() && !rook.hasMove() && !isKingOnCheck(king.getSide(), pieces, chessBoard) &&
+			   !isAnyPieceOnTheWay(chessBoard, king.getPosition(), rook.getPosition());
 	}
 
 	private void doCastling(Piece king, Piece rook) {
@@ -461,7 +479,7 @@ public class Game {
 						}
 						
 					} else {
-						if (!isAnyPieceOnTheWay(pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
+						if (!isAnyPieceOnTheWay(chessBoard, pieceToBeMoved.getPosition(), newPosition) && pieceToBeMoved.movePiece(newPosition)) {
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
 							pieces.recordLastMovedPiece(pieceToBeMoved);
 							if (shouldPromotePawn(pieceToBeMoved)) {
