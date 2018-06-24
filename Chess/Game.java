@@ -264,7 +264,7 @@ public class Game {
 	
 	private boolean isPossibleToMoveToCell(Piece pieceToBeMoved, Position startingPosition, Position endPosition) {
 		if (chessBoard.isCellOccupied(endPosition) ) {
-			return pieceToBeMoved.canCapturePiece(endPosition) &&
+			return pieceToBeMoved.canCapturePiece(endPosition) && !isAnyPieceOnTheWay(chessBoard, startingPosition, endPosition) &&
 					areEnemiePieces(chessBoard.getSelectedPieceId(), chessBoard.getCellPieceId(endPosition));
 		}
 		return pieceToBeMoved.canMoveTo(endPosition) && !isAnyPieceOnTheWay(chessBoard, startingPosition, endPosition);
