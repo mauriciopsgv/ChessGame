@@ -2,25 +2,35 @@ package Chess;
 
 public class TurnManager {
 
-	private static Side currentPlayerTurn = Side.WHITE;
+	private static final TurnManager turnManager = new TurnManager();
 	
-	public static void newGame() {
+	public static TurnManager getInstance() {
+		return turnManager;
+	}
+	
+	private Side currentPlayerTurn = Side.WHITE;
+	
+	public void newGame() {
 		currentPlayerTurn = Side.WHITE;
 	}
 	
-	public static Side getCurrentSide() {
+	public Side getCurrentSide() {
 		return currentPlayerTurn;
 	}
 	
-	public static Side getCurrentOpponentSide() {
+	public Side getCurrentOpponentSide() {
 		return (currentPlayerTurn == Side.WHITE) ? Side.BLACK : Side.WHITE;
 	}
 	
-	public static void finishTurn() {
+	public void finishTurn() {
 		currentPlayerTurn = getCurrentOpponentSide();
 	}
 	
-	public static boolean isPieceAllowedToMove(Piece piece) {
+	public boolean isPieceAllowedToMove(Piece piece) {
 		return piece.getSide() == currentPlayerTurn;
+	}
+	
+	public void setCurrentSide(Side side) {
+		currentPlayerTurn = side;
 	}
 }

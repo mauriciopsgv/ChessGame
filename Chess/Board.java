@@ -15,7 +15,7 @@ public class Board implements ScreenComponent {
 	
 	public Board() {
 		cells = new Cell[8][8];
-		boolean isBlackSquare = true;
+		boolean isBlackSquare = false;
 		for (int row = 0; row < 8; row++) {
 			for (int col = 0; col < 8; col++) {
 				if (isBlackSquare) {
