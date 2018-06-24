@@ -5,6 +5,7 @@ import java.awt.event.WindowEvent;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -322,6 +323,7 @@ public class Game {
 		Position kingPosition = king.getPosition();
 		ArrayList<Position> possibleMovements = new ArrayList<Position>();
 		ArrayList<Position> pMF = new ArrayList<Position>();
+		HashMap<Position, Integer> riskPositions = new HashMap<Position,Integer>();
 		
 		possibleMovements.add(new Position(kingPosition));
 		possibleMovements.add(new Position(kingPosition.row, kingPosition.column + 1));
@@ -349,7 +351,7 @@ public class Game {
 					if (isPossibleToMoveToCellMate(king, kingPosition, pos)) {
 						if(!isAnyPieceOnTheWay(opponentPiece.getPosition(), pos) &&
 								opponentPiece.canCapturePiece(pos)) {
-							pMC++;
+							riskPositions.put(pos,0);
 						}
 					}
 				}
@@ -361,9 +363,10 @@ public class Game {
 				}
 		}
 		
+		pMC = riskPositions.size();
 		// Maior igual porque uma casa pode ser ameaçada por mais de uma peça
-		if(pMC >= pMS && drown == 0) return Threat.DROWNING;
-		else if(pMC >= pMS && drown > 0) return Threat.CHECKMATE;
+		if(pMC == (pMS-1) && pMC != 0 && drown == 0) return Threat.DROWNING;
+		else if(pMC == pMS && drown > 0) return Threat.CHECKMATE;
 		else if(pMC < pMS && pMC != 0 && drown > 0) return Threat.CHECK;
 		return Threat.SAFE;
 	}
