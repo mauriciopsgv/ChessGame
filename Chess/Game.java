@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import Graphics.InitialWindow;
 import Graphics.MainWindow;
@@ -102,7 +103,8 @@ public class Game {
  	   
  	   else {
  			// Black side
- 			
+ 		  TurnManager.getInstance().setCurrentSide(Side.WHITE);
+ 		  
  			// Initialize
  			for (int i = 0; i < 8; i++) {
  				Pawn p = new Pawn(Side.BLACK, 1, i);
@@ -478,14 +480,31 @@ public class Game {
 			//TODO: xeque only makes sense to one side each turn
 			Threat kingStatus = this.isKingThreated(currentOpponentSideTurn);
 			if(kingStatus != Threat.SAFE) {
-				if(kingStatus == Threat.CHECKMATE) {
-					mainWindow.triggerAlert("CHEQUE-MATE");
+				if(kingStatus == Threat.CHECKMATE || kingStatus == Threat.DROWNING) {
+					String side;
+					String message;
+					Side actualSide = turnManager.getCurrentOpponentSide();
+					if(actualSide == Side.WHITE) side = "branco";
+					else side = "preto";
+					
+					if(kingStatus == Threat.CHECKMATE)
+						message = "Lado " + side + " é o vencedor! Deseja começar outra partida?";
+					else
+						message = "Empate por congelamento! Deseja começar outra partida?";
+					
+					int resp = JOptionPane.showConfirmDialog(null, message);
+					if(resp == JOptionPane.YES_OPTION) {
+						mainWindow.dispose();
+						initWindow.dispose();
+						newGame();
+					}
+					else if(resp == JOptionPane.NO_OPTION || resp == JOptionPane.CANCEL_OPTION) {
+						mainWindow.dispose();
+						initWindow.dispose();
+					}
 				}
 				else if(kingStatus == Threat.CHECK){
 					mainWindow.triggerAlert("CHEQUE");
-				}
-				else {
-					mainWindow.triggerAlert("EMPATE");
 				}
 			}
 		} else {
