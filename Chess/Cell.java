@@ -20,6 +20,14 @@ public class Cell implements ScreenComponent {
 		this.isSelected = false;
 	}
 	
+	Cell(int row, int column, Color color, int pieceId, boolean isSelected) {
+		this.row = row;
+		this.column = column;
+		this.color = color;
+		this.pieceId = pieceId;
+		this.isSelected = isSelected;
+	}
+	
 	public int getRow() {
 		return row;
 	}
@@ -46,6 +54,10 @@ public class Cell implements ScreenComponent {
 	
 	public void deselectCell() {
 		isSelected = false;
+	}
+	
+	public boolean isCellSelected() {
+		return isSelected;
 	}
 	
 	public void draw(Graphics g, int cellHeight, int cellWidth) {
