@@ -1,0 +1,4 @@
+Side: White
+Black King 0 7
+White King 1 5
+White Queen 2 0
