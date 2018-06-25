@@ -6,12 +6,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileWriter;
 import java.util.ArrayList;
-
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 
 import Chess.Game;
 import Chess.Position;
+import Interface.Operation;
 
 public class Canvas extends JPanel implements MouseListener {
 	
@@ -54,6 +56,22 @@ public class Canvas extends JPanel implements MouseListener {
 
 	public void newGame(Game game) {
 		this.game = game;
+		this.game.addObserver(new Observer() {
+            @SuppressWarnings("unchecked")
+			public void update(Observable obj, Object arg) {
+                Operation op = (Operation) arg;
+            	if (op.operationName.equals("AddComponent")) {
+            		addComponent((ScreenComponent) op.arg);
+            		repaint();
+            	} else if (op.operationName.equals("CopyComponent")) {
+            		copyComponents((ArrayList<ScreenComponent>) op.arg);
+            		repaint();
+            	} else if (op.operationName.equals("RemoveComponent")) {
+            		removeComponent((ScreenComponent) op.arg);
+            		repaint();
+            	}
+            }
+        });
 	}
 	
 	private int pixelXToColumn(int pixelX) {

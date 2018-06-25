@@ -3,6 +3,8 @@ package Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,15 +14,21 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import Chess.Game;
+import Interface.Operation;
 
 public class MainWindow extends JFrame {
 	
 	private Canvas canvas;
-	
+		
 	private int mainWindowWidth = 800;
 	private int mainWindowHeight = 800;
-
-	public MainWindow() {
+	
+	public static void main(String[] args) {
+		Game game = new Game();
+		game.newGame();
+	}
+	
+	public MainWindow(Game game) {
         super("Chess Game");
         super.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         super.setSize(mainWindowWidth, mainWindowHeight);
@@ -30,22 +38,25 @@ public class MainWindow extends JFrame {
         this.setContentPane(canvas);
         super.pack();
         super.setVisible(true);
+        
+        game.addObserver(new Observer() {
+			public void update(Observable obj, Object arg) {
+                Operation op = (Operation) arg;
+            	if (op.operationName.equals("showPromotePawnMenu")) {
+            		showPromotePawnMenu();
+            	} else if (op.operationName.equals("triggerAlert")) {
+            		triggerAlert((String) op.arg);
+            	} else if (op.operationName.equals("dispose")) {
+            		dispose();
+            	}
+            }
+        });
+        
+        newGame(game);
 	}
 	
 	public void newGame(Game game) {
 		canvas.newGame(game);
-	}
-
-	public boolean copyComponentsToCanvas(ArrayList<ScreenComponent> newComponents) {
-		return canvas.copyComponents(newComponents);
-	}
-
-	public boolean addComponentToCanvas(ScreenComponent component) {
-		 return canvas.addComponent(component);
-	}
-	
-	public boolean removeComponentFromCanvas(ScreenComponent component) {
-		return canvas.removeComponent(component);
 	}
 	
    public void showPromotePawnMenu(){
@@ -117,9 +128,5 @@ public class MainWindow extends JFrame {
 	         game.promotePawn(e.getActionCommand());
 	         window.repaint();
 		}
-	}
-
-	public void repaint() {
-		canvas.repaint();
 	}
 }

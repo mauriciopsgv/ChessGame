@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Observable;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -14,23 +15,17 @@ import Graphics.InitialWindow;
 import Graphics.MainWindow;
 import Graphics.ScreenComponent;
 import Graphics.Threat;
+import Interface.Operation;
 
-public class Game {
+public class Game extends Observable {
 	
 	private Board chessBoard;
 	
 	private PieceManager pieces;
 	
 	private TurnManager turnManager;
-	
-	private MainWindow mainWindow;
-	
+		
 	private InitialWindow initWindow;
-	
-	public static void main(String[] args) {
-		Game game = new Game();
-		game.newGame();
-	}
 		
 	private void clearGame() {
 		chessBoard = new Board();
@@ -50,12 +45,12 @@ public class Game {
 	
 	private void initGame(ArrayList<Piece> loadedPieces) {
 		
-		mainWindow = new MainWindow();
 		clearGame();
-		mainWindow.newGame(this);
+		new MainWindow(this);
 		
 		// Adding board
-		mainWindow.addComponentToCanvas(chessBoard);
+		this.setChanged();
+		this.notifyObservers(new Operation("AddComponent", chessBoard));
 		
 		// Adding Pieces
 		ArrayList<ScreenComponent> initialPieces = new ArrayList<ScreenComponent>();
@@ -189,8 +184,8 @@ public class Game {
 	        chessBoard.putPieceAt(currentPiece.getId(), new Position(currentPiece.getRow(), currentPiece.getColumn()));
 		}
 		
-		mainWindow.copyComponentsToCanvas(initialPieces);
-		mainWindow.repaint();
+		this.setChanged();
+		this.notifyObservers(new Operation("CopyComponent", initialPieces));
 	}
 	
 	private boolean areEnemiePieces(int pieceId1, int pieceId2) {
@@ -446,9 +441,11 @@ public class Game {
 			}
 			pieces.put(newPiece);
 			chessBoard.putPieceAt(newPiece.getId(), newPiece.getPosition());
-			mainWindow.removeComponentFromCanvas(lastMovedPiece);
-			mainWindow.addComponentToCanvas(newPiece);
-			mainWindow.repaint();
+			
+			this.setChanged();
+			this.notifyObservers(new Operation("RemoveComponent", lastMovedPiece));
+			this.setChanged();
+			this.notifyObservers(new Operation("AddComponent", newPiece));
 			return true;
 		}
 		return false;
@@ -468,11 +465,13 @@ public class Game {
 								pieceToBeMoved.canCapturePiece(newPosition)) { // Tenta comer a peça
 							pieceToBeMoved.capturePiece(newPosition);
 							Piece pieceToBeRemoved = pieces.remove(targetPieceId);
-							mainWindow.removeComponentFromCanvas(pieceToBeRemoved);
+							this.setChanged();
+							this.notifyObservers(new Operation("RemoveComponent", pieceToBeRemoved));
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
 							pieces.recordLastMovedPiece(pieceToBeMoved);
 							if (shouldPromotePawn(pieceToBeMoved)) {
-								mainWindow.showPromotePawnMenu();
+								this.setChanged();
+								this.notifyObservers(new Operation("showPromotePawnMenu", null));
 							}
 							turnManager.finishTurn();
 						}
@@ -492,7 +491,8 @@ public class Game {
 							chessBoard.movePieceTo(chessBoard.getSelectedPosition(), newPosition);
 							pieces.recordLastMovedPiece(pieceToBeMoved);
 							if (shouldPromotePawn(pieceToBeMoved)) {
-								mainWindow.showPromotePawnMenu();
+								this.setChanged();
+								this.notifyObservers(new Operation("showPromotePawnMenu", null));
 							}
 							turnManager.finishTurn();
 						}
@@ -517,17 +517,20 @@ public class Game {
 					
 					int resp = JOptionPane.showConfirmDialog(null, message);
 					if(resp == JOptionPane.YES_OPTION) {
-						mainWindow.dispose();
+						this.setChanged();
+						this.notifyObservers(new Operation("dispose", null));
 						initWindow.dispose();
 						newGame();
 					}
 					else if(resp == JOptionPane.NO_OPTION || resp == JOptionPane.CANCEL_OPTION) {
-						mainWindow.dispose();
+						this.setChanged();
+						this.notifyObservers(new Operation("dispose", null));
 						initWindow.dispose();
 					}
 				}
 				else if(kingStatus == Threat.CHECK){
-					mainWindow.triggerAlert("CHEQUE");
+					this.setChanged();
+					this.notifyObservers(new Operation("triggerAlert", "Cheque"));
 				}
 			}
 		} else {
