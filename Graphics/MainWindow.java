@@ -68,12 +68,8 @@ public class MainWindow extends JFrame {
 	  
 	  JMenuItem rookOption = new JMenuItem("Rook");
 	  rookOption.setActionCommand("Rook");
-		
-//	  cutMenuItem.addActionListener(menuItemListener);
-//	  copyMenuItem.addActionListener(menuItemListener);
-//	  pasteMenuItem.addActionListener(menuItemListener);
 	  
-	  MenuItemListenerGambiarra listener = new MenuItemListenerGambiarra(canvas.game, this);
+	  PromotePawnOptionListener listener = new PromotePawnOptionListener(canvas.game, this);
 	  bishopOption.addActionListener(listener);
 	  knightOption.addActionListener(listener);
 	  queenOption.addActionListener(listener);
@@ -109,11 +105,11 @@ public class MainWindow extends JFrame {
 		alertPanel.setVisible(true);
 	}
 	
-	class MenuItemListenerGambiarra implements ActionListener {
+	class PromotePawnOptionListener implements ActionListener {
 		private Game game;
 		private MainWindow window;
 		
-		MenuItemListenerGambiarra (Game game, MainWindow window) {
+		PromotePawnOptionListener (Game game, MainWindow window) {
 			this.game = game;
 			this.window = window;
 		}
