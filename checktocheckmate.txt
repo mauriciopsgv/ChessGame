@@ -1,0 +1,12 @@
+Side: White
+White Pawn 6 5
+White Pawn 6 6
+White Pawn 6 7
+White Rook 7 5
+White King 7 6
+White Queen 7 4
+White Knight 4 7
+Black Pawn 1 5
+Black Pawn 1 6
+Black Pawn 1 7
+Black King 0 7
